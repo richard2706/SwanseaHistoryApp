@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        supportActionBar?.hide() // Hide fragment action bar
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
