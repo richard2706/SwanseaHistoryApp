@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_login"
+        android:icon="@drawable/ic_baseline_login_24"
+        android:title="@string/log_in_menu_title"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_logout"
+        android:icon="@drawable/ic_baseline_logout_24"
+        android:title="@string/log_out_menu_title"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_email_visited"
+        android:icon="@drawable/ic_baseline_email_24"
+        android:title="@string/email_visited_menu_title"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/ic_baseline_add_location_alt_24"
+        android:title="@string/add_poi_menu_title"
+        app:showAsAction="ifRoom" />
+
+</menu>
