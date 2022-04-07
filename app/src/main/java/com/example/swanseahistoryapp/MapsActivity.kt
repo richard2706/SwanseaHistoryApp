@@ -10,6 +10,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.example.swanseahistoryapp.databinding.ActivityMapsBinding
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -46,14 +47,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         db.collection(POI_COLLECTION_NAME).get()
-            .addOnSuccessListener { result -> parsePois(result) }
+            .addOnSuccessListener { result ->
+                parsePois(result)
+                displayPoiMarkers()
+            }
             .addOnFailureListener { exception -> Log.w("firebase-log", exception) }
     }
 
     /**
      * Stores the data from the database in a list of PointOfInterest objects.
      */
-    fun parsePois(result : QuerySnapshot) {
+    private fun parsePois(result : QuerySnapshot) {
         var poiList  = mutableListOf<PointOfInterest>()
         for (document in result) {
             val id = document.id
@@ -65,6 +69,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             poiList.add(PointOfInterest(id, name, address, description, location, imageURL))
         }
         pois = poiList
+    }
+
+    /**
+     * Display the map markers for all PoIs.
+     */
+    private fun displayPoiMarkers() {
+        for (poi in pois) {
+            if (poi.location == null) continue
+            val poiPosition = LatLng(poi.location.latitude, poi.location.longitude)
+            mMap.addMarker(MarkerOptions()
+                .position(poiPosition)
+                .title(poi.name)
+            )
+        }
     }
 
     /**
