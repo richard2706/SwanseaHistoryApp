@@ -1,23 +1,20 @@
 package com.example.swanseahistoryapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-
+import androidx.appcompat.app.AppCompatActivity
+import com.example.swanseahistoryapp.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.example.swanseahistoryapp.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlin.reflect.typeOf
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     companion object {
         private val SWANSEA_LOCATION = LatLng(51.6255408,-3.9655064)
