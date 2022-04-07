@@ -99,6 +99,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.home_menu, menu)
+
+        val isStandardUser = false
+        val isAdminUser = false
+        val isLoggedIn = isStandardUser || isAdminUser
+
+        val loginAction = menu?.findItem(R.id.action_login)
+        if (loginAction != null) loginAction.isVisible = !isLoggedIn
+
+        val logoutAction = menu?.findItem(R.id.action_logout)
+        if (logoutAction != null) logoutAction.isVisible = isLoggedIn
+
+        val emailVisitedAction = menu?.findItem(R.id.action_email_visited)
+        if (emailVisitedAction != null) emailVisitedAction.isVisible = isLoggedIn
+
+        val addPoiAction = menu?.findItem(R.id.action_add)
+        if (addPoiAction != null) addPoiAction.isVisible = isAdminUser
+
         return super.onCreateOptionsMenu(menu)
     }
 }
