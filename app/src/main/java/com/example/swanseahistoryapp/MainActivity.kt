@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.example.swanseahistoryapp.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val IMAGE_URL_FIELD = "image_url"
     }
 
-    private lateinit var mMap: GoogleMap
+    private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var pois: List<PointOfInterest>
     private val db = Firebase.firestore
@@ -83,10 +83,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         for (poi in pois) {
             if (poi.location == null) continue
             val poiPosition = LatLng(poi.location.latitude, poi.location.longitude)
-            mMap.addMarker(MarkerOptions()
+            val marker = map.addMarker(MarkerOptions()
                 .position(poiPosition)
                 .title(poi.name)
             )
+            if (marker != null) marker.tag = poi
         }
         markersLoaded = true
     }
@@ -96,10 +97,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * used. This is where we can add markers or lines, add listeners or move the camera.
      */
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SWANSEA_LOCATION, DEFAULT_ZOOM))
+        map = googleMap
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SWANSEA_LOCATION, DEFAULT_ZOOM))
         mapReady = true
         displayPoiMarkers()
+        map.setInfoWindowAdapter(PoiMarkerInfoWindowAdapter(this))
     }
 
     /**

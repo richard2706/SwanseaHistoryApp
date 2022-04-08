@@ -1,8 +1,15 @@
 <resources>
+    <!-- Activity titles -->
     <string name="app_name">SwanseaHistoryApp</string>
     <string name="home_activity_title">Home</string>
+
+    <!-- Menu button labels -->
     <string name="log_in_menu_title">Log in</string>
     <string name="log_out_menu_title">Log out</string>
     <string name="email_visited_menu_title">Email Visited PoIs</string>
     <string name="add_poi_menu_title">Add PoI</string>
+
+    <!-- Button labels -->
+    <string name="poi_details_button_text">See Details</string>
+    <string name="poi_edit_button_text">Edit</string>
 </resources>
