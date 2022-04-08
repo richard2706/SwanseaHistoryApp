@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import com.google.firebase.firestore.GeoPoint
 
 class PoiDetails : AppCompatActivity() {
@@ -14,6 +17,7 @@ class PoiDetails : AppCompatActivity() {
         setContentView(R.layout.activity_poidetails)
         setSupportActionBar(findViewById(R.id.poi_details_toolbar))
         getPoiData()
+        displayPoiInfo()
     }
 
     /**
@@ -32,6 +36,23 @@ class PoiDetails : AppCompatActivity() {
         val location = if (hasLocation) GeoPoint(latitude, longitude) else null
 
         poi = PointOfInterest(id, name, address, description, location, imageURL)
+    }
+
+    /**
+     * Display the available information about the POI in the layout.
+     */
+    private fun displayPoiInfo() {
+        if (poi == null) return
+        // display image
+        // display visited message if visited
+        if (poi!!.name != null) findViewById<Toolbar>(R.id.poi_details_toolbar).title = poi!!.name
+        if (poi!!.address != null) {
+            val addressText = findViewById<TextView>(R.id.address_text)
+            addressText.text = poi!!.address
+            addressText.visibility = View.VISIBLE
+        }
+        if (poi!!.description != null)
+            findViewById<TextView>(R.id.description_text).text = poi!!.description
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
