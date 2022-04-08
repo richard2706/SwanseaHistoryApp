@@ -135,8 +135,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
      * Navigate to POI details screen when marker info window is clicked.
      */
     override fun onInfoWindowClick(marker: Marker) {
-//        Log.i("info-window", marker.tag.toString())
         val intent = Intent(this, PoiDetails::class.java)
+        val poiBundle = (marker.tag as PointOfInterest).toBundle()
+        intent.putExtras(poiBundle)
         startActivity(intent)
     }
 }
