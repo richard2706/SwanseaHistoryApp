@@ -31,8 +31,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
-    private val db = Firebase.firestore
     private lateinit var pois: List<PointOfInterest>
+    private val db = Firebase.firestore
+    private var dbReady = false
+    private var mapReady = false
+    private var markersLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +52,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         db.collection(POI_COLLECTION_NAME).get()
             .addOnSuccessListener { result ->
                 parsePois(result)
+                dbReady = true
                 displayPoiMarkers()
             }
             .addOnFailureListener { exception -> Log.w("firebase-log", exception) }
@@ -75,6 +79,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Display the map markers for all PoIs.
      */
     private fun displayPoiMarkers() {
+        if (markersLoaded || !mapReady || !dbReady) return
         for (poi in pois) {
             if (poi.location == null) continue
             val poiPosition = LatLng(poi.location.latitude, poi.location.longitude)
@@ -83,6 +88,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 .title(poi.name)
             )
         }
+        markersLoaded = true
     }
 
     /**
@@ -92,6 +98,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SWANSEA_LOCATION, DEFAULT_ZOOM))
+        mapReady = true
+        displayPoiMarkers()
     }
 
     /**
