@@ -2,6 +2,7 @@
     <!-- Activity titles -->
     <string name="app_name">SwanseaHistoryApp</string>
     <string name="home_activity_title">Home</string>
+    <string name="default_title_poi_details">Unknown Location</string>
 
     <!-- Menu button labels -->
     <string name="log_in_menu_title">Log in</string>
@@ -17,4 +18,7 @@
 
     <!-- Miscellaneous messages -->
     <string name="info_click_message">Click for details</string>
+    <string name="poi_visited_message">You have visited this point of interest</string>
+    <string name="poi_default_description">No description.</string>
+    <string name="poi_image_default_description">An image of the point of interest.</string>
 </resources>
