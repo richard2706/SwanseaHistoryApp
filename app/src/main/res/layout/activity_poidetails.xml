@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -66,7 +66,6 @@
             android:paddingRight="20dp"
             android:paddingBottom="10dp"
             android:text="@string/poi_visited_message"
-            android:textColor="@color/black"
             android:textSize="16sp"
             android:visibility="gone"
             app:drawableLeftCompat="@drawable/ic_baseline_beenhere_24" />
@@ -81,7 +80,6 @@
             android:paddingRight="20dp"
             android:paddingBottom="10dp"
             android:text="@string/poi_default_address"
-            android:textColor="@color/black"
             android:textSize="16sp"
             android:visibility="gone"
             app:drawableLeftCompat="@drawable/ic_baseline_location_on_24" />
@@ -94,7 +92,6 @@
             android:paddingTop="10dp"
             android:paddingBottom="20dp"
             android:text="@string/poi_default_description"
-            android:textColor="@color/black"
             android:textSize="16sp" />
 
       </LinearLayout>
