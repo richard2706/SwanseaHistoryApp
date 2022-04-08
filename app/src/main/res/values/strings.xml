@@ -21,4 +21,5 @@
     <string name="poi_visited_message">You have visited this point of interest</string>
     <string name="poi_default_description">No description.</string>
     <string name="poi_image_default_description">An image of the point of interest.</string>
+    <string name="poi_default_address">Address not available</string>
 </resources>

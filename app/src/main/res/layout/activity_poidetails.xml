@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -48,15 +49,39 @@
 
       <TextView
           android:id="@+id/visited_text"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
-          android:paddingHorizontal="20dp"
-          android:paddingTop="15dp"
-          android:paddingBottom="0dp"
+          android:drawablePadding="10dp"
+          android:paddingLeft="15dp"
+          android:paddingTop="10dp"
+          android:paddingRight="20dp"
+          android:paddingBottom="10dp"
           android:text="@string/poi_visited_message"
+          android:textColor="@color/black"
+          android:textSize="16sp"
           android:visibility="gone"
+          app:drawableLeftCompat="@drawable/ic_baseline_beenhere_24"
           app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/poi_details_card" />
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/poi_details_card" />
+
+      <TextView
+          android:id="@+id/address_text"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:drawablePadding="10dp"
+          android:paddingLeft="15dp"
+          android:paddingTop="10dp"
+          android:paddingRight="20dp"
+          android:paddingBottom="10dp"
+          android:text="@string/poi_default_address"
+          android:textColor="@color/black"
+          android:textSize="16sp"
+          android:visibility="gone"
+          app:drawableLeftCompat="@drawable/ic_baseline_location_on_24"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/visited_text" />
 
       <TextView
           android:id="@+id/description_text"
@@ -70,7 +95,7 @@
           android:textSize="16sp"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/visited_text" />
+          app:layout_constraintTop_toBottomOf="@id/address_text" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
