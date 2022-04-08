@@ -12,4 +12,7 @@
     <!-- Button labels -->
     <string name="poi_details_button_text">See Details</string>
     <string name="poi_edit_button_text">Edit</string>
+
+    <!-- Miscellaneous messages -->
+    <string name="info_click_message">Click for details</string>
 </resources>
