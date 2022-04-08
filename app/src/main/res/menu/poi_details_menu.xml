@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_visited"
+        android:icon="@drawable/ic_baseline_beenhere_24"
+        android:title="@string/mark_visited_menu_title"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_edit"
+        android:title="@string/edit_poi_menu_title"
+        app:showAsAction="never" />
+
+</menu>

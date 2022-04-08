@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <com.google.android.material.appbar.AppBarLayout
+      android:id="@+id/appbar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/poi_details_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="?attr/actionBarTheme"
+        app:title="PoI Details" />
+
+  </com.google.android.material.appbar.AppBarLayout>
+
+  <androidx.core.widget.NestedScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+
+
+      app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+      <androidx.cardview.widget.CardView
+          android:id="@+id/cardView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitStart"
+            app:srcCompat="@drawable/street" />
+
+        <TextView
+            android:id="@+id/poiNameText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="#59000000"
+            android:padding="16dp"
+            android:text="Swansea Point of Interest"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+      </androidx.cardview.widget.CardView>
+
+      <TextView
+          android:id="@+id/visitedText"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingHorizontal="20dp"
+          android:paddingTop="20dp"
+          android:paddingBottom="5dp"
+          android:text="You have visited this PoI"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+      <TextView
+          android:id="@+id/descriptionText"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingHorizontal="20dp"
+          android:paddingTop="5dp"
+          android:paddingBottom="20dp"
+          android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies, purus nec molestie maximus, ipsum ligula consequat purus, eu egestas lacus justo non sapien. Duis sagittis non lorem non gravida. Curabitur venenatis, erat a elementum pulvinar, dui ante sodales metus, in pellentesque nunc magna sit amet nulla. Integer non vehicula ligula. Aliquam eget condimentum turpis, vestibulum faucibus neque. Etiam ullamcorper porta leo eget porta. Sed id mauris non odio fringilla luctus. Donec euismod libero sit amet libero pretium accumsan. Ut tempus tellus sit amet dui varius, non aliquet magna tincidunt. Praesent mattis erat sed pretium tempus. Sed pretium ultrices pretium.  Nam ultrices id justo eget efficitur. Nulla in dui volutpat, congue mi vitae, aliquam justo. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Morbi lobortis mollis velit iaculis rutrum. Pellentesque tincidunt, dui sed consectetur dapibus, mauris mi sagittis sapien, eget convallis turpis libero sed ante. In tempor ornare ultricies. Aenean congue nec turpis eu tristique. Quisque consequat mauris vel ultrices congue. Suspendisse gravida ultricies dictum. Cras nec pretium lorem, at euismod magna. Quisque lacinia dapibus sapien, nec lacinia metus interdum sollicitudin. Sed nibh nibh, pretium a lacus sit amet, malesuada placerat ante. Proin ac felis a massa mattis viverra. Aenean sit amet nunc purus. Donec rhoncus consectetur arcu sit amet tempus. Sed consectetur ultrices metus, posuere interdum diam venenatis id.  Sed eu ex quis purus tempor fringilla. Quisque a urna sapien. Suspendisse finibus consequat odio, nec placerat elit dictum ac. Praesent ullamcorper elit a ante lobortis lacinia. Fusce arcu odio, pretium a nibh quis, finibus pulvinar tellus. Suspendisse blandit risus nec libero elementum, id viverra lectus euismod. Sed auctor tincidunt magna vitae scelerisque. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed convallis lacinia bibendum. Vivamus quis justo lacinia, pulvinar libero eget, maximus mauris. Suspendisse aliquet neque eu nulla porttitor hendrerit. In hac habitasse platea dictumst. Suspendisse feugiat, tortor vitae convallis semper, nibh enim luctus erat, sit amet convallis nunc enim bibendum diam. Vestibulum pharetra lorem eu risus sodales molestie."
+          android:textColor="@color/black"
+          android:textSize="16sp"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/visitedText" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+  </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

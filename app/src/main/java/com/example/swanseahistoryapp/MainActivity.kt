@@ -1,5 +1,6 @@
 package com.example.swanseahistoryapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(findViewById(R.id.home_toolbar))
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -134,6 +135,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
      * Navigate to POI details screen when marker info window is clicked.
      */
     override fun onInfoWindowClick(marker: Marker) {
-        Log.i("info-window", marker.tag.toString())
+//        Log.i("info-window", marker.tag.toString())
+        val intent = Intent(this, PoiDetails::class.java)
+        startActivity(intent)
     }
 }
