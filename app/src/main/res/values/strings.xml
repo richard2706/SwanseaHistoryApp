@@ -3,6 +3,7 @@
     <string name="app_name">SwanseaHistoryApp</string>
     <string name="home_activity_title">Home</string>
     <string name="default_title_poi_details">Unknown Location</string>
+    <string name="login_activity_title">Log In</string>
 
     <!-- Menu button labels -->
     <string name="log_in_menu_title">Log in</string>
@@ -15,6 +16,11 @@
     <!-- Button labels -->
     <string name="poi_details_button_text">See Details</string>
     <string name="poi_edit_button_text">Edit</string>
+    <string name="login_button_text">Log In</string>
+
+    <!-- Text field labels and placeholder text -->
+    <string name="login_email_text">Email</string>
+    <string name="login_password_text">Password</string>
 
     <!-- Miscellaneous messages -->
     <string name="info_click_message">Click for details</string>

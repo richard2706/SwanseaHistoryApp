@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.example.swanseahistoryapp.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -129,6 +130,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         if (addPoiAction != null) addPoiAction.isVisible = isAdminUser
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    /**
+     * Controls the actions taken when a menu item is selected.
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_login -> startActivity(Intent(this, LoginActivity::class.java))
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     /**
