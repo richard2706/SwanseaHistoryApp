@@ -16,7 +16,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     companion object {
         private val SWANSEA_LOCATION = LatLng(51.6255408,-3.9655064)
@@ -102,6 +102,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mapReady = true
         displayPoiMarkers()
         map.setInfoWindowAdapter(PoiMarkerInfoWindowAdapter(this))
+        map.setOnInfoWindowClickListener(this)
     }
 
     /**
@@ -127,5 +128,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         if (addPoiAction != null) addPoiAction.isVisible = isAdminUser
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    /**
+     * Navigate to POI details screen when marker info window is clicked.
+     */
+    override fun onInfoWindowClick(marker: Marker) {
+        Log.i("info-window", marker.tag.toString())
     }
 }
