@@ -14,6 +14,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -58,6 +59,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                 displayPoiMarkers()
             }
             .addOnFailureListener { exception -> Log.w("firebase-log", exception) }
+    }
+
+    /**
+     * Display the message, if present, when the user navigates back to the home screen.
+     */
+    override fun onResume() {
+        super.onResume()
+        val extraData = intent.extras
+        val message = extraData?.getString("message")
+        if (message != null) displayMessage(message)
     }
 
     /**
@@ -150,5 +161,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         val poiBundle = (marker.tag as PointOfInterest).toBundle()
         intent.putExtras(poiBundle)
         startActivity(intent)
+    }
+
+    /**
+     * Display a long snackbar message.
+     */
+    private fun displayMessage(message : String) {
+        Snackbar.make(window.decorView.rootView, message, Snackbar.LENGTH_LONG).show()
     }
 }
