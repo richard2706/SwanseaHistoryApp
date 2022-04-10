@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -32,13 +33,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         private const val IMAGE_URL_FIELD = "image_url"
     }
 
+    // Map related variables
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var pois: List<PointOfInterest>
-    private val db = Firebase.firestore
     private var dbReady = false
     private var mapReady = false
     private var markersLoaded = false
+
+    private val db = Firebase.firestore
+    private var auth = FirebaseAuth.getInstance()
+    private var currentUser = auth.currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +71,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
      */
     override fun onResume() {
         super.onResume()
+        currentUser = auth.currentUser // Update the logged in user
+
         val extraData = intent.extras
         val message = extraData?.getString("message")
         if (message != null) displayMessage(message)
@@ -125,7 +132,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.home_menu, menu)
 
-        val isStandardUser = false
+        val isStandardUser = currentUser != null
         val isAdminUser = false
         val isLoggedIn = isStandardUser || isAdminUser
 
