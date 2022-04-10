@@ -69,33 +69,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     }
 
     /**
-     * Save extra user data when the instance state is saved.
-     */
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        Log.i("login-debug", "onSaveInstanceState userType: $userType")
-//        outState.putSerializable("userType", userType)
-//        outState.putString("k1", "v1")
-//    }
-
-    /**
-     * Recover extra user data when the instance state is restored, e.g. when opening the app again
-     * after it was exited.
-     */
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-//        Log.i("login-debug", "onRestoreInstanceState")
-//
-//        val k1 = savedInstanceState.getString("k1", "k1 not found")
-//        Log.i("login-debug", "onRestoreInstanceState k1: $k1")
-//
-//        val previousUserType = savedInstanceState.getSerializable("userType")
-//        Log.i("login-debug", "onRestoreInstanceState previousUserType: " + (if (previousUserType == null) previousUserType.toString() else (previousUserType as UserType).toString()))
-//        userType = if (previousUserType == null) UserType.GUEST else previousUserType as UserType
-//
-//        super.onRestoreInstanceState(savedInstanceState)
-//    }
-
-    /**
      * Display the message, if present, when the user navigates back to the home screen.
      */
     override fun onResume() {
@@ -108,10 +81,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         intent.removeExtra("message")
 
         val updatedUserType = extraData?.get("userType")
-        if (updatedUserType == null) {
+        if (updatedUserType == null && currentUser != null) {
             startActivity(Intent(this, LoginActivity::class.java))
-        } else {
+        } else if (updatedUserType != null) {
             userType = updatedUserType as UserType
+        } else {
+            userType = UserType.GUEST
         }
         invalidateOptionsMenu() // Update the menu for the user's account type
     }
