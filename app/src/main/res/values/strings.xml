@@ -30,6 +30,7 @@
     <string name="message_missing_password">Please enter your password</string>
     <string name="message_missing_email_password">Please enter your email and password</string>
     <string name="message_logout">You have logged out</string>
+    <string name="message_admin_verification_failed">Could not verify your account as admin</string>
 
     <!-- Miscellaneous messages -->
     <string name="info_click_message">Click for details</string>

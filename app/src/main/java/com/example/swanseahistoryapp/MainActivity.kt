@@ -25,12 +25,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     companion object {
         private val SWANSEA_LOCATION = LatLng(51.6255408,-3.9655064)
         private const val DEFAULT_ZOOM = 11F
-        private const val POI_COLLECTION_NAME = "points_of_interest"
-        private const val NAME_FIELD = "name"
-        private const val ADDRESS_FIELD = "address"
-        private const val DESCRIPTION_FIELD = "description"
-        private const val LOCATION_FIELD = "location"
-        private const val IMAGE_URL_FIELD = "image_url"
+
+        private const val POI_COLLECTION = "points_of_interest"
+        private const val POI_NAME_FIELD = "name"
+        private const val POI_ADDRESS_FIELD = "address"
+        private const val POI_DESCRIPTION_FIELD = "description"
+        private const val POI_LOCATION_FIELD = "location"
+        private const val POI_IMAGE_URL_FIELD = "image_url"
     }
 
     // Map related variables
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private val db = Firebase.firestore
     private var auth = FirebaseAuth.getInstance()
     private var currentUser = auth.currentUser
+    private var userType : UserType? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        db.collection(POI_COLLECTION_NAME).get()
+        db.collection(POI_COLLECTION).get()
             .addOnSuccessListener { result ->
                 parsePois(result)
                 dbReady = true
@@ -67,16 +69,51 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     }
 
     /**
+     * Save extra user data when the instance state is saved.
+     */
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+//        Log.i("login-debug", "onSaveInstanceState userType: $userType")
+//        outState.putSerializable("userType", userType)
+//        outState.putString("k1", "v1")
+//    }
+
+    /**
+     * Recover extra user data when the instance state is restored, e.g. when opening the app again
+     * after it was exited.
+     */
+//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+//        Log.i("login-debug", "onRestoreInstanceState")
+//
+//        val k1 = savedInstanceState.getString("k1", "k1 not found")
+//        Log.i("login-debug", "onRestoreInstanceState k1: $k1")
+//
+//        val previousUserType = savedInstanceState.getSerializable("userType")
+//        Log.i("login-debug", "onRestoreInstanceState previousUserType: " + (if (previousUserType == null) previousUserType.toString() else (previousUserType as UserType).toString()))
+//        userType = if (previousUserType == null) UserType.GUEST else previousUserType as UserType
+//
+//        super.onRestoreInstanceState(savedInstanceState)
+//    }
+
+    /**
      * Display the message, if present, when the user navigates back to the home screen.
      */
     override fun onResume() {
         super.onResume()
-        currentUser = auth.currentUser // Update the logged in user
-
+        currentUser = auth.currentUser // Update logged in user
         val extraData = intent.extras
+
         val message = extraData?.getString("message")
         if (message != null) displayMessage(message)
         intent.removeExtra("message")
+
+        val updatedUserType = extraData?.get("userType")
+        if (updatedUserType == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+        } else {
+            userType = updatedUserType as UserType
+        }
+        invalidateOptionsMenu() // Update the menu for the user's account type
     }
 
     /**
@@ -86,11 +123,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         var poiList  = mutableListOf<PointOfInterest>()
         for (document in result) {
             val id = document.id
-            val name = document.getString(NAME_FIELD)
-            val address = document.getString(ADDRESS_FIELD)
-            val description = document.getString(DESCRIPTION_FIELD)
-            val location = document.getGeoPoint(LOCATION_FIELD)
-            val imageURL = document.getString(IMAGE_URL_FIELD)
+            val name = document.getString(POI_NAME_FIELD)
+            val address = document.getString(POI_ADDRESS_FIELD)
+            val description = document.getString(POI_DESCRIPTION_FIELD)
+            val location = document.getGeoPoint(POI_LOCATION_FIELD)
+            val imageURL = document.getString(POI_IMAGE_URL_FIELD)
             poiList.add(PointOfInterest(id, name, address, description, location, imageURL))
         }
         pois = poiList
@@ -127,14 +164,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     }
 
     /**
-     * Populate the toolbar menu with the home screen actions.
+     * Populate the toolbar menu with the home screen actions. Menu will be empty until user type
+     * has been confirmed.
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if (userType == null) return super.onCreateOptionsMenu(menu)
+
         menuInflater.inflate(R.menu.home_menu, menu)
 
-        val isStandardUser = currentUser != null
-        val isAdminUser = false
-        val isLoggedIn = isStandardUser || isAdminUser
+        val isLoggedIn = userType != UserType.GUEST
 
         val loginAction = menu?.findItem(R.id.action_login)
         if (loginAction != null) loginAction.isVisible = !isLoggedIn
@@ -146,7 +184,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         if (emailVisitedAction != null) emailVisitedAction.isVisible = isLoggedIn
 
         val addPoiAction = menu?.findItem(R.id.action_add)
-        if (addPoiAction != null) addPoiAction.isVisible = isAdminUser
+        if (addPoiAction != null) addPoiAction.isVisible = userType == UserType.ADMIN
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -178,8 +216,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private fun logoutUser() {
         if (currentUser == null) return
         auth.signOut()
-        currentUser = auth.currentUser
-        invalidateOptionsMenu()
+        currentUser = null // Clear current user
+        userType = UserType.GUEST
+        invalidateOptionsMenu() // Update menu options
         displayMessage(getString(R.string.message_logout))
     }
 

@@ -4,14 +4,21 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
+    companion object {
+        private const val USERS_COLLECTION = "users"
+        private const val USER_IS_ADMIN_FIELD = "isAdmin"
+    }
+
+    private val db = Firebase.firestore
     private var auth = FirebaseAuth.getInstance()
     private var currentUser = auth.currentUser
 
@@ -53,20 +60,39 @@ class LoginActivity : AppCompatActivity() {
 
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
-                currentUser = auth.currentUser
                 if (task.isSuccessful) handleSuccessfulLogin()
                 else handleFailedLogin()
             }
     }
 
     /**
-     * Navigates the user back to the home screen and displays a corresponding message.
+     * Determines the user's account type then navigates the user back to the home screen and
+     * displays a corresponding message.
      */
     private fun handleSuccessfulLogin() {
-        val intent = Intent(this, MainActivity::class.java)
-        val loginMessage = getString(R.string.message_successful_login, currentUser!!.email)
-        intent.putExtra("message", loginMessage)
-        startActivity(intent)
+        currentUser = auth.currentUser
+        if (currentUser == null) handleFailedLogin()
+
+        var loginMessage = getString(R.string.message_successful_login, currentUser!!.email)
+
+        // Determine user type
+        var userType = UserType.STANDARD
+        val currentUserUid = currentUser!!.uid
+        db.collection(USERS_COLLECTION).document(currentUserUid).get()
+            .addOnSuccessListener { result ->
+                val userIsAdmin = result.getBoolean(USER_IS_ADMIN_FIELD)
+                if (userIsAdmin == true) userType = UserType.ADMIN
+            }
+            .addOnFailureListener {
+                loginMessage += " " + getString(R.string.message_admin_verification_failed)
+            }
+            .addOnCompleteListener {
+                // Navigate to home screen with message and admin user status
+                val intent = Intent(this, MainActivity::class.java)
+                intent.putExtra("message", loginMessage)
+                intent.putExtra("userType", userType)
+                startActivity(intent)
+            }
     }
 
     /**
