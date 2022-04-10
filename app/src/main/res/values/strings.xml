@@ -29,6 +29,7 @@
     <string name="message_missing_email">Please enter your email address</string>
     <string name="message_missing_password">Please enter your password</string>
     <string name="message_missing_email_password">Please enter your email and password</string>
+    <string name="message_logout">You have logged out</string>
 
     <!-- Miscellaneous messages -->
     <string name="info_click_message">Click for details</string>

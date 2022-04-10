@@ -157,6 +157,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_login -> startActivity(Intent(this, LoginActivity::class.java))
+            R.id.action_logout -> logoutUser()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -169,6 +170,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         val poiBundle = (marker.tag as PointOfInterest).toBundle()
         intent.putExtras(poiBundle)
         startActivity(intent)
+    }
+
+    /**
+     * Logs the user out (if logged in) and displays a message.
+     */
+    private fun logoutUser() {
+        if (currentUser == null) return
+        auth.signOut()
+        currentUser = auth.currentUser
+        invalidateOptionsMenu()
+        displayMessage(getString(R.string.message_logout))
     }
 
     /**
