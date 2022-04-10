@@ -22,6 +22,14 @@
     <string name="login_email_text">Email</string>
     <string name="login_password_text">Password</string>
 
+    <!-- Authentication messages -->
+    <string name="message_already_logged_in">You are already logged in as %s</string>
+    <string name="message_successful_login">Welcome %s!</string>
+    <string name="message_failed_login">Your login details are incorrect</string>
+    <string name="message_missing_email">Please enter your email address</string>
+    <string name="message_missing_password">Please enter your password</string>
+    <string name="message_missing_email_password">Please enter your email and password</string>
+
     <!-- Miscellaneous messages -->
     <string name="info_click_message">Click for details</string>
     <string name="poi_visited_message">You have visited this point of interest</string>
