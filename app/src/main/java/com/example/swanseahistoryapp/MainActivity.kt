@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         val extraData = intent.extras
         val message = extraData?.getString("message")
         if (message != null) displayMessage(message)
+        intent.removeExtra("message")
     }
 
     /**
