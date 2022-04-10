@@ -168,6 +168,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
      * Display a long snackbar message.
      */
     private fun displayMessage(message : String) {
-        Snackbar.make(window.decorView.rootView, message, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(findViewById(R.id.home_root), message, Snackbar.LENGTH_LONG).show()
     }
 }
