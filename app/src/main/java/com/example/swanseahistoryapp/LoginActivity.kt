@@ -19,6 +19,16 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
     }
+
+    /**
+     * When the user navigates to this login activity, return to the home screen if they are
+     * already logged in.
+     */
+    override fun onStart() {
+        super.onStart()
+        if (currentUser != null) handleSuccessfulLogin()
+    }
+
     /**
      * Attempts to log the user in with the email and password they provided. Navigates to the home
      * screen if the user logged in successfully.
