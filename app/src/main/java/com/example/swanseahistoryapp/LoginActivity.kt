@@ -40,6 +40,30 @@ class LoginActivity : AppCompatActivity() {
                 displayMessage(getString(R.string.message_missing_password))
             return
         }
+
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                currentUser = auth.currentUser
+                if (task.isSuccessful) handleSuccessfulLogin()
+                else handleFailedLogin()
+            }
+    }
+
+    /**
+     * Navigates the user back to the home screen and displays a corresponding message.
+     */
+    private fun handleSuccessfulLogin() {
+//        val intent = Intent(this, MainActivity::class.java)
+//        val loginMessage = getString(R.string.message_successful_login, currentUser!!.email)
+//        intent.putExtra("message", loginMessage)
+//        startActivity(intent)
+    }
+
+    /**
+     * Notifies the user that they could not be logged in.
+     */
+    private fun handleFailedLogin() {
+        displayMessage(getString(R.string.message_failed_login))
     }
 
     /**
