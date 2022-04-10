@@ -182,6 +182,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         val intent = Intent(this, PoiDetails::class.java)
         val poiBundle = (marker.tag as PointOfInterest).toBundle()
         intent.putExtras(poiBundle)
+        intent.putExtra("userType", userType)
         startActivity(intent)
     }
 
