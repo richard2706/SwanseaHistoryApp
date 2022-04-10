@@ -103,6 +103,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
+     * Navigate back to home screen when back button pressed.
+     */
+    override fun onBackPressed() {
+        startActivity(Intent(this, MainActivity::class.java))
+    }
+
+    /**
      * Display a long snackbar message.
      */
     private fun displayMessage(message : String) {
