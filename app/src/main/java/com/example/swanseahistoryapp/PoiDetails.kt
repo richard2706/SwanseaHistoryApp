@@ -10,11 +10,14 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Callback
+import java.lang.Exception
 
 class PoiDetails : AppCompatActivity() {
     private var auth = FirebaseAuth.getInstance()
@@ -91,8 +94,13 @@ class PoiDetails : AppCompatActivity() {
      */
     private fun displayPoiImage(imageURL : String) {
         val imageView = findViewById<ImageView>(R.id.poi_image)
-        Picasso.get().load(imageURL).into(imageView)
-        // if image fails to load, display snackbar and hide cardview
+        Picasso.get().load(imageURL).into(imageView, object : Callback {
+            override fun onSuccess() {}
+            override fun onError(exception: Exception) {
+                displayMessage(getString(R.string.poi_image_error))
+                Log.e("poi-details", exception.toString())
+            }
+        })
     }
 
     /**
@@ -116,5 +124,12 @@ class PoiDetails : AppCompatActivity() {
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * Display a long snackbar message.
+     */
+    private fun displayMessage(message : String) {
+        Snackbar.make(findViewById(R.id.poi_details_root), message, Snackbar.LENGTH_LONG).show()
     }
 }
