@@ -7,15 +7,21 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import com.squareup.picasso.Picasso
 
 class PoiDetails : AppCompatActivity() {
     private var auth = FirebaseAuth.getInstance()
     private var currentUser = auth.currentUser
     private var userType = UserType.GUEST
+
+    private var storageRef = Firebase.storage.reference
 
     private var poi : PointOfInterest? = null
 
@@ -66,7 +72,9 @@ class PoiDetails : AppCompatActivity() {
      */
     private fun displayPoiInfo() {
         if (poi == null) return
-        // display image
+        if (poi!!.imageURL != null) {
+            displayPoiImage(poi!!.imageURL!!)
+        }
         // display visited message if visited
         if (poi!!.name != null) findViewById<Toolbar>(R.id.poi_details_toolbar).title = poi!!.name
         if (poi!!.address != null) {
@@ -76,6 +84,15 @@ class PoiDetails : AppCompatActivity() {
         }
         if (poi!!.description != null)
             findViewById<TextView>(R.id.description_text).text = poi!!.description
+    }
+
+    /**
+     * Displays the image at the given URL on the screen.
+     */
+    private fun displayPoiImage(imageURL : String) {
+        val imageView = findViewById<ImageView>(R.id.poi_image)
+        Picasso.get().load(imageURL).into(imageView)
+        // if image fails to load, display snackbar and hide cardview
     }
 
     /**
