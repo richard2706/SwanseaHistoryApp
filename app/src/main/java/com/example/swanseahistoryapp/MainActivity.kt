@@ -2,6 +2,8 @@ package com.example.swanseahistoryapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -59,13 +61,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        db.collection(POI_COLLECTION).get()
-            .addOnSuccessListener { result ->
-                parsePois(result)
-                dbReady = true
-                displayPoiMarkers()
-            }
-            .addOnFailureListener { exception -> Log.w("firebase-log", exception) }
+        loadPois()
     }
 
     /**
@@ -89,6 +85,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
             userType = UserType.GUEST
         }
         invalidateOptionsMenu() // Update the menu for the user's account type
+    }
+
+    /**
+     * Load the POIs from the database
+     */
+    private fun loadPois() {
+        db.collection(POI_COLLECTION).get()
+            .addOnSuccessListener { result ->
+                parsePois(result)
+                dbReady = true
+                displayPoiMarkers()
+            }
+            .addOnFailureListener { exception ->
+                displayMessage(getString(R.string.message_pois_not_loaded))
+                Log.w("firebase-log", exception)
+            }
     }
 
     /**

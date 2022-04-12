@@ -29,6 +29,7 @@
     <string name="message_admin_verification_failed">Could not verify your account as admin</string>
 
     <!-- Miscellaneous messages -->
+    <string name="message_pois_not_loaded">Map failed to load</string>
     <string name="info_click_message">Click for details</string>
     <string name="poi_visited_message">You have visited this point of interest</string>
     <string name="poi_default_description">No description.</string>
