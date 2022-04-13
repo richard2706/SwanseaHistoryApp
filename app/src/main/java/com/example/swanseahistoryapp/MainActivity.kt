@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private var auth = FirebaseAuth.getInstance()
     private var currentUser = auth.currentUser
     private var userType : UserType? = null
+    private var notificationsEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,11 +78,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         intent.removeExtra("message")
 
         val updatedUserType = extraData?.get("userType")
-        if (updatedUserType == null && currentUser != null) {
-            startActivity(Intent(this, LoginActivity::class.java))
-        } else if (updatedUserType != null) {
-            userType = updatedUserType as UserType
-        } else {
+        val updatedNotificationsEnabled = extraData?.get("notificationsEnabled")
+        if (currentUser != null) { // if user is logged in
+            if (updatedUserType == null) { // account type not specified
+                startActivity(Intent(this, LoginActivity::class.java))
+            } else {
+                userType = updatedUserType as UserType
+                notificationsEnabled = updatedNotificationsEnabled as Boolean
+            }
+        } else { // not logged in
             userType = UserType.GUEST
         }
         invalidateOptionsMenu() // Update the menu for the user's account type
@@ -170,6 +175,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         val emailVisitedAction = menu?.findItem(R.id.action_email_visited)
         if (emailVisitedAction != null) emailVisitedAction.isVisible = isLoggedIn
 
+        menu?.findItem(R.id.action_enable_notifications)?.isVisible =
+            isLoggedIn && !notificationsEnabled
+        menu?.findItem(R.id.action_disable_notifications)?.isVisible =
+            isLoggedIn && notificationsEnabled
+
         val addPoiAction = menu?.findItem(R.id.action_add)
         if (addPoiAction != null) addPoiAction.isVisible = userType == UserType.ADMIN
 
@@ -206,6 +216,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         auth.signOut()
         currentUser = null // Clear current user
         userType = UserType.GUEST
+
         invalidateOptionsMenu() // Update menu options
         displayMessage(getString(R.string.message_logout))
     }
