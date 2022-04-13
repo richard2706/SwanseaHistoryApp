@@ -109,12 +109,9 @@ class PoiDetails : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.poi_details_menu, menu)
 
-        val markVisitedAction = menu?.findItem(R.id.action_visited)
-        if (markVisitedAction != null) markVisitedAction.isVisible =
+        menu?.findItem(R.id.action_visited)?.isVisible =
             userType == UserType.STANDARD || userType == UserType.ADMIN
-
-        val editAction = menu?.findItem(R.id.action_edit)
-        if (editAction != null) editAction.isVisible = userType == UserType.ADMIN
+        menu?.findItem(R.id.action_edit)?.isVisible = userType == UserType.ADMIN
 
         return super.onCreateOptionsMenu(menu)
     }

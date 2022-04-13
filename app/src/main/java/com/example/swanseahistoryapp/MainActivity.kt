@@ -161,27 +161,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         if (userType == null) return super.onCreateOptionsMenu(menu)
-
         menuInflater.inflate(R.menu.home_menu, menu)
 
         val isLoggedIn = userType != UserType.GUEST
-
-        val loginAction = menu?.findItem(R.id.action_login)
-        if (loginAction != null) loginAction.isVisible = !isLoggedIn
-
-        val logoutAction = menu?.findItem(R.id.action_logout)
-        if (logoutAction != null) logoutAction.isVisible = isLoggedIn
-
-        val emailVisitedAction = menu?.findItem(R.id.action_email_visited)
-        if (emailVisitedAction != null) emailVisitedAction.isVisible = isLoggedIn
-
+        menu?.findItem(R.id.action_login)?.isVisible = !isLoggedIn
+        menu?.findItem(R.id.action_logout)?.isVisible = isLoggedIn
+        menu?.findItem(R.id.action_email_visited)?.isVisible = isLoggedIn
         menu?.findItem(R.id.action_enable_notifications)?.isVisible =
             isLoggedIn && !notificationsEnabled
         menu?.findItem(R.id.action_disable_notifications)?.isVisible =
             isLoggedIn && notificationsEnabled
-
-        val addPoiAction = menu?.findItem(R.id.action_add)
-        if (addPoiAction != null) addPoiAction.isVisible = userType == UserType.ADMIN
+        menu?.findItem(R.id.action_add)?.isVisible = userType == UserType.ADMIN
 
         return super.onCreateOptionsMenu(menu)
     }
