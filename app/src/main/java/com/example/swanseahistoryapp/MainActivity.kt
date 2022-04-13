@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -34,6 +35,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         private const val POI_DESCRIPTION_FIELD = "description"
         private const val POI_LOCATION_FIELD = "location"
         private const val POI_IMAGE_URL_FIELD = "image_url"
+
+        private const val USERS_COLLECTION = "users"
+        private const val USER_NOTIFICATIONS_FIELD = "nearby_notifications"
     }
 
     // Map related variables
@@ -183,6 +187,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         when (item.itemId) {
             R.id.action_login -> startActivity(Intent(this, LoginActivity::class.java))
             R.id.action_logout -> logoutUser()
+            R.id.action_enable_notifications -> enableNotifications()
+            R.id.action_disable_notifications -> disableNotifications()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -209,6 +215,55 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
 
         invalidateOptionsMenu() // Update menu options
         displayMessage(getString(R.string.message_logout))
+    }
+
+    /**
+     * Enable notifications when the user is nearby a point of interest.
+     */
+    private fun enableNotifications() {
+        if (notificationsEnabled) {
+            displayMessage(getString(R.string.message_notifications_enabled))
+            return
+        }
+
+        // Update user preference in database
+        val currentUserUid = currentUser!!.uid
+        val data = hashMapOf(USER_NOTIFICATIONS_FIELD to true)
+        db.collection(USERS_COLLECTION).document(currentUserUid).set(data, SetOptions.merge())
+            .addOnSuccessListener {
+                // Request background notification permission
+                // Start background service
+                displayMessage(getString(R.string.message_notifications_enabled))
+                notificationsEnabled = true
+                invalidateOptionsMenu()
+            }
+            .addOnFailureListener {
+                displayMessage(getString(R.string.message_update_prefs_failed))
+            }
+    }
+
+    /**
+     * Disable notifications when the user is nearby a point of interest.
+     */
+    private fun disableNotifications() {
+        if (!notificationsEnabled) {
+            displayMessage(getString(R.string.message_notifications_disabled))
+            return
+        }
+
+        // Update user preference in database
+        val currentUserUid = currentUser!!.uid
+        val data = hashMapOf(USER_NOTIFICATIONS_FIELD to false)
+        db.collection(USERS_COLLECTION).document(currentUserUid).set(data, SetOptions.merge())
+            .addOnSuccessListener {
+                // Stop background service
+                displayMessage(getString(R.string.message_notifications_disabled))
+                notificationsEnabled = false
+                invalidateOptionsMenu()
+            }
+            .addOnFailureListener {
+                displayMessage(getString(R.string.message_update_prefs_failed))
+            }
     }
 
     /**
