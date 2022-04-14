@@ -29,7 +29,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var poi : PointOfInterest? = null
     private lateinit var textToSpeechService : TextToSpeech
     private lateinit var speakDescriptionButton : Button
-    private lateinit var poiDescriptionView : TextView
+    private lateinit var descriptionTextView : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +39,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         speakDescriptionButton = findViewById(R.id.button_speak_description)
         textToSpeechService = TextToSpeech(this, this)
-        poiDescriptionView = findViewById(R.id.description_text)
+        descriptionTextView = findViewById(R.id.description_text)
         displayPoiInfo()
     }
 
@@ -57,6 +57,14 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
         invalidateOptionsMenu()
 
         super.onResume()
+    }
+
+    /**
+     * Release the text to speech service's resources when the activity is destroyed.
+     */
+    override fun onDestroy() {
+        super.onDestroy()
+        textToSpeechService.shutdown()
     }
 
     /**
@@ -106,7 +114,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         if (poi?.description != null) {
             speakDescriptionButton.visibility = View.VISIBLE
-            findViewById<TextView>(R.id.description_text).text = poi?.description
+            descriptionTextView.text = poi?.description
         }
     }
 
@@ -151,7 +159,8 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
      * Speaks the description text when the speak description button is clicked.
      */
     fun onSpeakDescriptionButtonClick(view : View) {
-
+        val text = descriptionTextView.text.toString()
+        textToSpeechService.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
     }
 
     /**
