@@ -2,6 +2,7 @@ package com.example.swanseahistoryapp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -35,6 +36,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         private const val POI_DESCRIPTION_FIELD = "description"
         private const val POI_LOCATION_FIELD = "location"
         private const val POI_IMAGE_URL_FIELD = "image_url"
+
+        private const val USERS_COLLECTION = "users"
+        private const val USER_VISITED_ARRAY = "visited_pois"
     }
 
     // Map related variables
@@ -224,6 +228,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         when (item.itemId) {
             R.id.action_login -> startActivity(Intent(this, LoginActivity::class.java))
             R.id.action_logout -> logoutUser()
+            R.id.action_email_visited -> emailVisitedPois()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -249,6 +254,66 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         userType = UserType.GUEST
         invalidateOptionsMenu() // Update menu options
         displayMessage(getString(R.string.message_logout))
+    }
+
+    /**
+     * Send an email containing a list of poi's that the user has visited to the user's email
+     * address.
+     */
+    private fun emailVisitedPois() {
+        if (currentUser == null) return
+        val userEmail = currentUser?.email ?: return
+        var emailFailed = false
+
+        // Find list of visited pois, then send the email
+        db.collection(USERS_COLLECTION).document(currentUser!!.uid).get()
+            .addOnSuccessListener { result ->
+                val visitedPoisArray = result.get(USER_VISITED_ARRAY)
+                if (visitedPoisArray == null) { // check if array is empty as well
+                    emailFailed = true
+                } else {
+                    val visitedPoiIds = result.get(USER_VISITED_ARRAY) as ArrayList<String>
+                    if (visitedPoiIds.size < 1) {
+                        emailFailed = true
+                    } else {
+                        val emailSubject = getString(R.string.email_visited_subject)
+                        val emailBody = generateVisitedEmailBody(visitedPoiIds)
+
+                        val emailIntent = Intent(Intent.ACTION_SEND)
+                        emailIntent.type = "message/rfc822"
+                        emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(userEmail))
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, emailSubject)
+                        emailIntent.putExtra(Intent.EXTRA_TEXT, emailBody)
+                        try {
+                            val emailChooserTitle = getString(R.string.email_chooser_title)
+                            startActivity(Intent.createChooser(emailIntent, emailChooserTitle))
+                        } catch (ex : ActivityNotFoundException) {
+                            emailFailed = true
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener {
+                emailFailed = true
+            }
+            .addOnCompleteListener {
+                if (emailFailed) displayMessage(getString(R.string.message_no_visited_pois))
+            }
+    }
+
+    /**
+     * Returns the email body containing information about the user's visited PoIs.
+     */
+    private fun generateVisitedEmailBody(poiIds : ArrayList<String>) : String {
+        var body = StringBuilder()
+        body.appendLine(getString(R.string.email_body_line_1))
+        val visitedPois = pois.filter {
+                pointOfInterest: PointOfInterest -> poiIds.contains(pointOfInterest.id)
+        }
+        for (visitedPoi in visitedPois) {
+            body.appendLine(getString(R.string.email_body_list_item, visitedPoi.name))
+        }
+        return body.toString()
     }
 
     /**

@@ -29,6 +29,13 @@
     <string name="message_logout">You have logged out</string>
     <string name="error_admin_verification_failed">Could not verify your account as admin</string>
 
+    <!-- Visited PoI email text -->
+    <string name="email_visited_subject">Your visited points of interest in Swansea</string>
+    <string name="email_chooser_title">Send email via...</string>
+    <string name="error_email_send">Unable to send email</string>
+    <string name="email_body_line_1">You have visited the following points of interest:</string>
+    <string name="email_body_list_item">- %s</string>
+
     <!-- Miscellaneous messages -->
     <string name="error_map_pois_not_loaded">Map failed to load</string>
     <string name="message_map_info_window_click">Click for details</string>
@@ -40,4 +47,5 @@
     <string name="error_text_to_speech_error">The text to speech service is not working</string>
     <string name="error_visited_state_not_determined">Could not determine if you have visited here previously</string>
     <string name="error_visited_state_not_updated">Could not update your visited status</string>
+    <string name="message_no_visited_pois">You have not visited any points of interest</string>
 </resources>
