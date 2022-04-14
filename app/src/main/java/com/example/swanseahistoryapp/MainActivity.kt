@@ -1,5 +1,7 @@
 package com.example.swanseahistoryapp
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -7,6 +9,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.swanseahistoryapp.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -43,6 +46,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private var dbReady = false
     private var mapReady = false
     private var markersLoaded = false
+    private var locationPermissionGranted = false
 
     private val db = Firebase.firestore
     private var auth = FirebaseAuth.getInstance()
@@ -62,6 +66,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         mapFragment.getMapAsync(this)
 
         loadPois()
+        checkLocationPermissions()
     }
 
     /**
@@ -118,6 +123,29 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
             poiList.add(PointOfInterest(id, name, address, description, location, imageURL))
         }
         pois = poiList
+    }
+
+    /**
+     * Checks and requests location permissions to display the user's location on the map.
+     */
+    private fun checkLocationPermissions() {
+        val locationPermissionRequest = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+                permissions.getOrDefault(
+                    Manifest.permission.ACCESS_FINE_LOCATION, false) ->
+                    locationPermissionGranted = true
+                permissions.getOrDefault(
+                    Manifest.permission.ACCESS_COARSE_LOCATION, false) ->
+                    locationPermissionGranted = true
+            }
+        }
+
+        // Request permission if not already granted
+        locationPermissionRequest.launch(arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION))
     }
 
     /**
