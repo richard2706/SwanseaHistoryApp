@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -37,6 +38,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
     private val db = Firebase.firestore
     private lateinit var textToSpeechService : TextToSpeech
     private lateinit var speakDescriptionButton : Button
+    private lateinit var visitedTextView : TextView
     private lateinit var descriptionTextView : TextView
 
     private var poi : PointOfInterest? = null
@@ -51,6 +53,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         speakDescriptionButton = findViewById(R.id.button_speak_description)
         textToSpeechService = TextToSpeech(this, this)
+        visitedTextView = findViewById(R.id.visited_text)
         descriptionTextView = findViewById(R.id.description_text)
         displayPoiInfo()
     }
@@ -158,7 +161,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }
 
                 if (visited == true) {
-                    findViewById<TextView>(R.id.visited_text).visibility = View.VISIBLE
+                    visitedTextView.visibility = View.VISIBLE
                 }
                 invalidateOptionsMenu() // show the visited menu option
             }
@@ -202,10 +205,33 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     /**
-     *
+     * Updates the user's visited state for this PoI.
      */
     private fun toggleUserVisitedState() {
+        if (visited == null) return
 
+        val currentUserUid = currentUser!!.uid
+        val currentUserDocument = db.collection(USERS_COLLECTION).document(currentUserUid)
+
+        if (visited == false)
+            currentUserDocument.update(USER_VISITED_ARRAY, FieldValue.arrayUnion(poi?.id))
+            .addOnSuccessListener {
+                visited = true
+                visitedTextView.visibility = View.VISIBLE
+            }
+            .addOnFailureListener {
+                displayMessage(getString(R.string.error_visited_state_not_updated))
+            }
+
+        if (visited == true)
+            currentUserDocument.update(USER_VISITED_ARRAY, FieldValue.arrayRemove(poi?.id))
+            .addOnSuccessListener {
+                visited = false
+                visitedTextView.visibility = View.GONE
+            }
+            .addOnFailureListener {
+                displayMessage(getString(R.string.error_visited_state_not_updated))
+            }
     }
 
     /**
