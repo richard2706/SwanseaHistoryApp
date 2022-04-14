@@ -4,8 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -103,7 +101,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                 displayPoiMarkers()
             }
             .addOnFailureListener { exception ->
-                displayMessage(getString(R.string.message_pois_not_loaded))
+                displayMessage(getString(R.string.error_map_pois_not_loaded))
                 Log.w("firebase-log", exception)
             }
     }

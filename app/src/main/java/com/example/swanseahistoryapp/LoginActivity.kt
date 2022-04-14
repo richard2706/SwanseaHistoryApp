@@ -84,7 +84,7 @@ class LoginActivity : AppCompatActivity() {
                 if (userIsAdmin == true) userType = UserType.ADMIN
             }
             .addOnFailureListener {
-                loginMessage += " " + getString(R.string.message_admin_verification_failed)
+                loginMessage += " " + getString(R.string.error_admin_verification_failed)
             }
             .addOnCompleteListener {
                 // Navigate to home screen with message and admin user status

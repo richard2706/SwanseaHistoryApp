@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
-            android:contentDescription="@string/poi_image_default_description"
+            android:contentDescription="@string/default_poi_image_description"
             android:scaleType="fitStart" />
 
       </androidx.cardview.widget.CardView>
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:drawablePadding="10dp"
             android:paddingVertical="10dp"
-            android:text="@string/poi_visited_message"
+            android:text="@string/message_poi_visited"
             android:textSize="16sp"
             android:visibility="gone"
             app:drawableLeftCompat="@drawable/ic_baseline_beenhere_24" />
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:drawablePadding="10dp"
             android:paddingVertical="10dp"
-            android:text="@string/poi_default_address"
+            android:text="@string/default_poi_address"
             android:textSize="16sp"
             android:visibility="gone"
             app:drawableLeftCompat="@drawable/ic_baseline_location_on_24" />
@@ -82,7 +82,7 @@
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_speak_description_text"
+            android:text="@string/button_text_speak_description"
             android:visibility="gone" />
 
         <TextView
@@ -92,7 +92,7 @@
             android:paddingHorizontal="5dp"
             android:paddingTop="10dp"
             android:paddingBottom="20dp"
-            android:text="@string/poi_default_description"
+            android:text="@string/default_poi_description"
             android:textSize="16sp" />
 
       </LinearLayout>

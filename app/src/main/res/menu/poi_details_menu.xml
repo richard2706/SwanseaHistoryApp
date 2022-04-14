@@ -4,12 +4,12 @@
     <item
         android:id="@+id/action_visited"
         android:icon="@drawable/ic_baseline_beenhere_24"
-        android:title="@string/mark_visited_menu_title"
+        android:title="@string/menu_title_mark_visited"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_edit"
-        android:title="@string/edit_poi_menu_title"
+        android:title="@string/menu_title_edit_poi"
         app:showAsAction="never" />
 
 </menu>

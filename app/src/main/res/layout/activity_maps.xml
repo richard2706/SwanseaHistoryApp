@@ -16,7 +16,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:theme="?attr/actionBarTheme"
-            app:title="@string/home_activity_title" />
+            app:title="@string/title_home_activity" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

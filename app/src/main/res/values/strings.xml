@@ -1,25 +1,25 @@
 <resources>
     <!-- Activity titles -->
     <string name="app_name">SwanseaHistoryApp</string>
-    <string name="home_activity_title">Home</string>
+    <string name="title_home_activity">Home</string>
     <string name="default_title_poi_details">Unknown Location</string>
-    <string name="login_activity_title">Log In</string>
+    <string name="title_login_activity">Log In</string>
 
     <!-- Button labels -->
-    <string name="log_in_menu_title">Log in</string>
-    <string name="log_out_menu_title">Log out</string>
-    <string name="email_visited_menu_title">Email Visited PoIs</string>
-    <string name="add_poi_menu_title">Add PoI</string>
-    <string name="mark_visited_menu_title">Mark as Visited</string>
-    <string name="edit_poi_menu_title">Edit</string>
-    <string name="button_speak_description_text">Speak description</string>
+    <string name="menu_title_log_in">Log in</string>
+    <string name="menu_title_log_out">Log out</string>
+    <string name="menu_title_email_visited">Email Visited PoIs</string>
+    <string name="menu_title_add_poi">Add PoI</string>
+    <string name="menu_title_mark_visited">Mark as Visited</string>
+    <string name="menu_title_edit_poi">Edit</string>
+    <string name="button_text_speak_description">Speak description</string>
 
     <!-- Text field labels and placeholder text -->
-    <string name="login_email_text">Email</string>
-    <string name="login_password_text">Password</string>
+    <string name="label_text_email">Email</string>
+    <string name="label_text_password">Password</string>
 
     <!-- Authentication messages -->
-    <string name="login_button_text">Log In</string>
+    <string name="button_text_login">Log In</string>
     <string name="message_already_logged_in">You are already logged in as %s</string>
     <string name="message_successful_login">Welcome %s!</string>
     <string name="message_failed_login">Your login details are incorrect</string>
@@ -27,14 +27,14 @@
     <string name="message_missing_password">Please enter your password</string>
     <string name="message_missing_email_password">Please enter your email and password</string>
     <string name="message_logout">You have logged out</string>
-    <string name="message_admin_verification_failed">Could not verify your account as admin</string>
+    <string name="error_admin_verification_failed">Could not verify your account as admin</string>
 
     <!-- Miscellaneous messages -->
-    <string name="message_pois_not_loaded">Map failed to load</string>
-    <string name="info_click_message">Click for details</string>
-    <string name="poi_visited_message">You have visited this point of interest</string>
-    <string name="poi_default_description">No description.</string>
-    <string name="poi_image_default_description">An image of the point of interest.</string>
-    <string name="poi_default_address">Address not available</string>
-    <string name="poi_image_error">Image could not be displayed</string>
+    <string name="error_map_pois_not_loaded">Map failed to load</string>
+    <string name="message_map_info_window_click">Click for details</string>
+    <string name="message_poi_visited">You have visited this point of interest</string>
+    <string name="default_poi_description">No description.</string>
+    <string name="default_poi_image_description">An image of the point of interest.</string>
+    <string name="default_poi_address">Address not available</string>
+    <string name="error_poi_image_not_loaded">Image could not be displayed</string>
 </resources>

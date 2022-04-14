@@ -97,7 +97,7 @@ class PoiDetails : AppCompatActivity() {
         Picasso.get().load(imageURL).into(imageView, object : Callback {
             override fun onSuccess() {}
             override fun onError(exception: Exception) {
-                displayMessage(getString(R.string.poi_image_error))
+                displayMessage(getString(R.string.error_poi_image_not_loaded))
                 Log.e("poi-details", exception.toString())
             }
         })
