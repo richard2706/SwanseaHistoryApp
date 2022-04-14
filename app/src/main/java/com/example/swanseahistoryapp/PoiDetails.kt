@@ -1,12 +1,12 @@
 package com.example.swanseahistoryapp
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
@@ -75,18 +75,21 @@ class PoiDetails : AppCompatActivity() {
      */
     private fun displayPoiInfo() {
         if (poi == null) return
-        if (poi!!.imageURL != null) {
-            displayPoiImage(poi!!.imageURL!!)
-        }
+        if (poi?.name != null) findViewById<Toolbar>(R.id.poi_details_toolbar).title = poi!!.name
+        if (poi?.imageURL != null) displayPoiImage(poi!!.imageURL!!)
+
         // display visited message if visited
-        if (poi!!.name != null) findViewById<Toolbar>(R.id.poi_details_toolbar).title = poi!!.name
-        if (poi!!.address != null) {
+
+        if (poi?.address != null) {
             val addressText = findViewById<TextView>(R.id.address_text)
             addressText.text = poi!!.address
             addressText.visibility = View.VISIBLE
         }
-        if (poi!!.description != null)
-            findViewById<TextView>(R.id.description_text).text = poi!!.description
+
+        if (poi?.description != null) {
+            findViewById<Button>(R.id.button_speak_description).visibility = View.VISIBLE
+            findViewById<TextView>(R.id.description_text).text = poi?.description
+        }
     }
 
     /**
