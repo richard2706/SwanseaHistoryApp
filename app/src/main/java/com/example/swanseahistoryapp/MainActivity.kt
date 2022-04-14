@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -37,6 +38,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         private const val POI_DESCRIPTION_FIELD = "description"
         private const val POI_LOCATION_FIELD = "location"
         private const val POI_IMAGE_URL_FIELD = "image_url"
+
+        private const val USERS_COLLECTION = "users"
+        private const val USER_NOTIFICATIONS_FIELD = "nearby_notifications"
     }
 
     // Map related variables
@@ -52,6 +56,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private var auth = FirebaseAuth.getInstance()
     private var currentUser = auth.currentUser
     private var userType : UserType? = null
+    private var notificationsEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,11 +87,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         intent.removeExtra("message")
 
         val updatedUserType = extraData?.get("userType")
-        if (updatedUserType == null && currentUser != null) {
-            startActivity(Intent(this, LoginActivity::class.java))
-        } else if (updatedUserType != null) {
-            userType = updatedUserType as UserType
-        } else {
+        val updatedNotificationsEnabled = extraData?.get("notificationsEnabled")
+        if (currentUser != null) { // if user is logged in
+            if (updatedUserType == null) { // account type not specified
+                startActivity(Intent(this, LoginActivity::class.java))
+            } else {
+                userType = updatedUserType as UserType
+                notificationsEnabled = updatedNotificationsEnabled as Boolean
+            }
+        } else { // not logged in
             userType = UserType.GUEST
         }
         invalidateOptionsMenu() // Update the menu for the user's account type
@@ -199,22 +208,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         if (userType == null) return super.onCreateOptionsMenu(menu)
-
         menuInflater.inflate(R.menu.home_menu, menu)
 
         val isLoggedIn = userType != UserType.GUEST
-
-        val loginAction = menu?.findItem(R.id.action_login)
-        if (loginAction != null) loginAction.isVisible = !isLoggedIn
-
-        val logoutAction = menu?.findItem(R.id.action_logout)
-        if (logoutAction != null) logoutAction.isVisible = isLoggedIn
-
-        val emailVisitedAction = menu?.findItem(R.id.action_email_visited)
-        if (emailVisitedAction != null) emailVisitedAction.isVisible = isLoggedIn
-
-        val addPoiAction = menu?.findItem(R.id.action_add)
-        if (addPoiAction != null) addPoiAction.isVisible = userType == UserType.ADMIN
+        menu?.findItem(R.id.action_login)?.isVisible = !isLoggedIn
+        menu?.findItem(R.id.action_logout)?.isVisible = isLoggedIn
+        menu?.findItem(R.id.action_email_visited)?.isVisible = isLoggedIn
+        menu?.findItem(R.id.action_enable_notifications)?.isVisible =
+            isLoggedIn && !notificationsEnabled
+        menu?.findItem(R.id.action_disable_notifications)?.isVisible =
+            isLoggedIn && notificationsEnabled
+        menu?.findItem(R.id.action_add)?.isVisible = userType == UserType.ADMIN
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -226,6 +230,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         when (item.itemId) {
             R.id.action_login -> startActivity(Intent(this, LoginActivity::class.java))
             R.id.action_logout -> logoutUser()
+            R.id.action_enable_notifications -> enableNotifications()
+            R.id.action_disable_notifications -> disableNotifications()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -249,8 +255,58 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         auth.signOut()
         currentUser = null // Clear current user
         userType = UserType.GUEST
+
         invalidateOptionsMenu() // Update menu options
         displayMessage(getString(R.string.message_logout))
+    }
+
+    /**
+     * Enable notifications when the user is nearby a point of interest.
+     */
+    private fun enableNotifications() {
+        if (notificationsEnabled) {
+            displayMessage(getString(R.string.message_notifications_enabled))
+            return
+        }
+
+        // Update user preference in database
+        val currentUserUid = currentUser!!.uid
+        val data = hashMapOf(USER_NOTIFICATIONS_FIELD to true)
+        db.collection(USERS_COLLECTION).document(currentUserUid).set(data, SetOptions.merge())
+            .addOnSuccessListener {
+                // Request background notification permission
+                // Start background service
+                displayMessage(getString(R.string.message_notifications_enabled))
+                notificationsEnabled = true
+                invalidateOptionsMenu()
+            }
+            .addOnFailureListener {
+                displayMessage(getString(R.string.message_update_prefs_failed))
+            }
+    }
+
+    /**
+     * Disable notifications when the user is nearby a point of interest.
+     */
+    private fun disableNotifications() {
+        if (!notificationsEnabled) {
+            displayMessage(getString(R.string.message_notifications_disabled))
+            return
+        }
+
+        // Update user preference in database
+        val currentUserUid = currentUser!!.uid
+        val data = hashMapOf(USER_NOTIFICATIONS_FIELD to false)
+        db.collection(USERS_COLLECTION).document(currentUserUid).set(data, SetOptions.merge())
+            .addOnSuccessListener {
+                // Stop background service
+                displayMessage(getString(R.string.message_notifications_disabled))
+                notificationsEnabled = false
+                invalidateOptionsMenu()
+            }
+            .addOnFailureListener {
+                displayMessage(getString(R.string.message_update_prefs_failed))
+            }
     }
 
     /**
