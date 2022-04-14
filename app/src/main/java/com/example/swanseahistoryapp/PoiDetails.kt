@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.GeoPoint
@@ -155,6 +156,11 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
                     val visitedPoiIds = result.get(USER_VISITED_ARRAY) as ArrayList<String>
                     visitedPoiIds.contains(poi!!.id)
                 }
+
+                if (visited == true) {
+                    findViewById<TextView>(R.id.visited_text).visibility = View.VISIBLE
+                }
+                invalidateOptionsMenu() // show the visited menu option
             }
             .addOnFailureListener {
                 displayMessage(getString(R.string.error_visited_state_not_determined))
@@ -169,7 +175,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         val markVisitedAction = menu?.findItem(R.id.action_mark_visited)
         if (markVisitedAction != null) markVisitedAction.isVisible =
-            userType == UserType.STANDARD || userType == UserType.ADMIN
+            userType == UserType.STANDARD || userType == UserType.ADMIN && visited != null
 
         val editAction = menu?.findItem(R.id.action_edit)
         if (editAction != null) editAction.isVisible = userType == UserType.ADMIN
