@@ -76,8 +76,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         mapFragment.getMapAsync(this)
 
         loadPois()
+
         registerPermissionRequests()
-        requestLocationPermissions()
+
+        // Request foreground location permissions if not already granted
+        locationPermissionRequest.launch(arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION))
     }
 
     /**
@@ -168,24 +173,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
             poiList.add(PointOfInterest(id, name, address, description, location, imageURL))
         }
         pois = poiList
-    }
-
-    /**
-     * Requests location permissions if not already granted. Used to display the user's location
-     * on the map.
-     */
-    private fun requestLocationPermissions() {
-        locationPermissionRequest.launch(arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION))
-    }
-
-    /**
-     * Requests the background location permission if not already granted. Needed for the background
-     * service to detect when user is near a POI.
-     */
-    private fun checkBackgroundLocationPermission() {
-        backgroundLocationPermissionRequest.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
 
     /**
@@ -293,19 +280,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private fun enableNotificationsPreference() {
         if (notificationsEnabled) {
             displayMessage(getString(R.string.message_notifications_enabled))
-            return
+        } else {
+            backgroundLocationPermissionRequest.launch(
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
-
-        // Update user preference in database
-        val currentUserUid = currentUser!!.uid
-        val data = hashMapOf(USER_NOTIFICATIONS_FIELD to true)
-        db.collection(USERS_COLLECTION).document(currentUserUid).set(data, SetOptions.merge())
-            .addOnSuccessListener {
-                checkBackgroundLocationPermission()
-            }
-            .addOnFailureListener {
-                displayMessage(getString(R.string.message_update_notification_pref_failed))
-            }
     }
 
     /**
@@ -314,10 +292,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private fun enableNearbyNotifications() {
         if (!backgroundLocationPermissionGranted) return
 
-        // Start background service
-        displayMessage(getString(R.string.message_notifications_enabled))
-        notificationsEnabled = true
-        invalidateOptionsMenu()
+        // Update user preference in database
+        val currentUserUid = currentUser!!.uid
+        val data = hashMapOf(USER_NOTIFICATIONS_FIELD to true)
+        db.collection(USERS_COLLECTION).document(currentUserUid).set(data, SetOptions.merge())
+            .addOnSuccessListener {
+                // Start background service
+                displayMessage(getString(R.string.message_notifications_enabled))
+                notificationsEnabled = true
+                invalidateOptionsMenu()
+            }
+            .addOnFailureListener {
+                displayMessage(getString(R.string.message_update_notification_pref_failed))
+            }
     }
 
     /**
