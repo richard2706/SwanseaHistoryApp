@@ -16,7 +16,6 @@ class LoginActivity : AppCompatActivity() {
     companion object {
         private const val USERS_COLLECTION = "users"
         private const val USER_IS_ADMIN_FIELD = "isAdmin"
-        private const val USER_NOTIFICATIONS_FIELD = "nearby_notifications"
     }
 
     private val db = Firebase.firestore
@@ -76,17 +75,13 @@ class LoginActivity : AppCompatActivity() {
 
         var loginMessage = getString(R.string.message_successful_login, currentUser!!.email)
 
-        // Determine user type and notification preferences
+        // Determine user type
         var userType = UserType.STANDARD
-        var notificationsEnabled = false
         val currentUserUid = currentUser!!.uid
         db.collection(USERS_COLLECTION).document(currentUserUid).get()
             .addOnSuccessListener { result ->
                 val userIsAdmin = result.getBoolean(USER_IS_ADMIN_FIELD)
                 if (userIsAdmin == true) userType = UserType.ADMIN
-
-                val userNotificationsEnabled = result.getBoolean((USER_NOTIFICATIONS_FIELD))
-                if (userNotificationsEnabled == true) notificationsEnabled = true
             }
             .addOnFailureListener {
                 loginMessage += " " + getString(R.string.message_admin_verification_failed)
@@ -96,7 +91,6 @@ class LoginActivity : AppCompatActivity() {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("message", loginMessage)
                 intent.putExtra("userType", userType)
-                intent.putExtra("notificationsEnabled", notificationsEnabled)
                 startActivity(intent)
             }
     }

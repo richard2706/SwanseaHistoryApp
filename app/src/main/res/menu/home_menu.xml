@@ -17,16 +17,6 @@
         android:title="@string/email_visited_menu_title"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_enable_notifications"
-        android:icon="@drawable/ic_baseline_notifications_24"
-        android:title="@string/notifications_enable_menu_title"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_disable_notifications"
-        android:icon="@drawable/ic_baseline_notifications_off_24"
-        android:title="@string/notifications_disable_menu_title"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_add"
         android:icon="@drawable/ic_baseline_add_location_alt_24"
         android:title="@string/add_poi_menu_title"
