@@ -37,4 +37,5 @@
     <string name="default_poi_image_description">An image of the point of interest.</string>
     <string name="default_poi_address">Address not available</string>
     <string name="error_poi_image_not_loaded">Image could not be displayed</string>
+    <string name="error_text_to_speech_error">The text to speech service is not working</string>
 </resources>

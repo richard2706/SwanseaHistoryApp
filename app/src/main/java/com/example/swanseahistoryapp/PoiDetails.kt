@@ -2,6 +2,7 @@ package com.example.swanseahistoryapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -19,20 +20,26 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Callback
 import java.lang.Exception
 
-class PoiDetails : AppCompatActivity() {
+class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var auth = FirebaseAuth.getInstance()
     private var currentUser = auth.currentUser
     private var userType = UserType.GUEST
 
     private var storageRef = Firebase.storage.reference
-
     private var poi : PointOfInterest? = null
+    private lateinit var textToSpeechService : TextToSpeech
+    private lateinit var speakDescriptionButton : Button
+    private lateinit var poiDescriptionView : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_poidetails)
         setSupportActionBar(findViewById(R.id.poi_details_toolbar))
         getPoiData()
+
+        speakDescriptionButton = findViewById(R.id.button_speak_description)
+        textToSpeechService = TextToSpeech(this, this)
+        poiDescriptionView = findViewById(R.id.description_text)
         displayPoiInfo()
     }
 
@@ -50,6 +57,17 @@ class PoiDetails : AppCompatActivity() {
         invalidateOptionsMenu()
 
         super.onResume()
+    }
+
+    /**
+     * When the text to speech service is initialised, enable the speak description button.
+     */
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            speakDescriptionButton.isEnabled = true
+        } else {
+            displayMessage(getString(R.string.error_text_to_speech_error))
+        }
     }
 
     /**
@@ -87,7 +105,7 @@ class PoiDetails : AppCompatActivity() {
         }
 
         if (poi?.description != null) {
-            findViewById<Button>(R.id.button_speak_description).visibility = View.VISIBLE
+            speakDescriptionButton.visibility = View.VISIBLE
             findViewById<TextView>(R.id.description_text).text = poi?.description
         }
     }
@@ -127,6 +145,13 @@ class PoiDetails : AppCompatActivity() {
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * Speaks the description text when the speak description button is clicked.
+     */
+    fun onSpeakDescriptionButtonClick(view : View) {
+
     }
 
     /**
