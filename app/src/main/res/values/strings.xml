@@ -30,6 +30,13 @@
     <string name="message_logout">You have logged out</string>
     <string name="message_admin_verification_failed">Could not verify your account as admin</string>
 
+    <!-- Nearby notifications messages -->
+    <string name="message_notifications_enabled">You will receive notifications when nearby a PoI</string>
+    <string name="message_notifications_disabled">You will no longer receive notifications when nearby a PoI</string>
+    <string name="message_notifications_error">There was an issue setting up notifications</string>
+    <string name="message_no_background_location">You must enable the background location permission to receive notifications when nearby a PoI</string>
+    <string name="message_update_notification_pref_failed">Your notification preference could not be updated</string>
+
     <!-- Miscellaneous messages -->
     <string name="message_pois_not_loaded">Map failed to load</string>
     <string name="info_click_message">Click for details</string>
@@ -38,8 +45,4 @@
     <string name="poi_image_default_description">An image of the point of interest.</string>
     <string name="poi_default_address">Address not available</string>
     <string name="poi_image_error">Image could not be displayed</string>
-    <string name="message_notifications_enabled">You will receive notifications when nearby a PoI</string>
-    <string name="message_notifications_disabled">You will no longer receive notifications when nearby a PoI</string>
-    <string name="message_no_background_location">You must enable the background location permission to receive notifications when nearby a PoI</string>
-    <string name="message_update_notification_pref_failed">Your notification preference could not be updated</string>
 </resources>

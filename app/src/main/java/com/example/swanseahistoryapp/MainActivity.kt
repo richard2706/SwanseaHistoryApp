@@ -2,6 +2,7 @@ package com.example.swanseahistoryapp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +12,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.swanseahistoryapp.databinding.ActivityMapsBinding
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -30,6 +35,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     companion object {
         private val SWANSEA_LOCATION = LatLng(51.6255408,-3.9655064)
         private const val DEFAULT_ZOOM = 11F
+        private const val GEOFENCE_RADIUS = 250F // in metres
+//        private const val GEOFENCE_NOTIFICATION_DELAY = 300000 // 5 minutes
+        private const val GEOFENCE_NOTIFICATION_DELAY = 10000 // 10 seconds
 
         private const val POI_COLLECTION = "points_of_interest"
         private const val POI_NAME_FIELD = "name"
@@ -49,6 +57,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private var dbReady = false
     private var mapReady = false
     private var markersLoaded = false
+
+    // Geofencing related variables
+    private lateinit var geofencingClient: GeofencingClient
+    private val geofencePendingIntent: PendingIntent by lazy {
+        // Intent invoked by Location services
+        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
+        PendingIntent.getBroadcast(this, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE)
+    }
 
     // Permissions related variables
     private var locationPermissionGranted = false
@@ -297,14 +314,54 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         val data = hashMapOf(USER_NOTIFICATIONS_FIELD to true)
         db.collection(USERS_COLLECTION).document(currentUserUid).set(data, SetOptions.merge())
             .addOnSuccessListener {
-                // Start background service
-                displayMessage(getString(R.string.message_notifications_enabled))
-                notificationsEnabled = true
-                invalidateOptionsMenu()
+                startGeofenceMonitoring()
             }
             .addOnFailureListener {
                 displayMessage(getString(R.string.message_update_notification_pref_failed))
             }
+    }
+
+    /**
+     * Starts the geofence monitoring for all POIs
+     */
+    @SuppressLint("MissingPermission")
+    private fun startGeofenceMonitoring() {
+        geofencingClient = LocationServices.getGeofencingClient(this)
+
+        // Create geofences for all POIs
+        val geofenceList = mutableListOf<Geofence>()
+        for (poi in pois) {
+            if (poi.location != null) geofenceList += Geofence.Builder()
+                .setRequestId(poi.id)
+                .setCircularRegion(
+                    poi.location.latitude,
+                    poi.location.longitude,
+                    GEOFENCE_RADIUS
+                )
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)
+                .setLoiteringDelay(GEOFENCE_NOTIFICATION_DELAY)
+                .build()
+        }
+
+        // Crete geofencing request
+        val geofencingRequest = GeofencingRequest.Builder().apply {
+            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            addGeofences(geofenceList)
+        }.build()
+
+        // Add geofences to the geofencing client
+        geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
+            addOnSuccessListener {
+                displayMessage(getString(R.string.message_notifications_enabled))
+                notificationsEnabled = true
+                invalidateOptionsMenu()
+            }
+            addOnFailureListener {
+                displayMessage(getString((R.string.message_notifications_error)))
+
+            }
+        }
     }
 
     /**
