@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
@@ -21,21 +22,31 @@ import com.squareup.picasso.Callback
 import java.lang.Exception
 
 class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
+
+    companion object {
+        private const val USERS_COLLECTION = "users"
+        private const val USER_VISITED_ARRAY = "visited_pois"
+    }
+
     private var auth = FirebaseAuth.getInstance()
     private var currentUser = auth.currentUser
     private var userType = UserType.GUEST
 
     private var storageRef = Firebase.storage.reference
-    private var poi : PointOfInterest? = null
+    private val db = Firebase.firestore
     private lateinit var textToSpeechService : TextToSpeech
     private lateinit var speakDescriptionButton : Button
     private lateinit var descriptionTextView : TextView
+
+    private var poi : PointOfInterest? = null
+    private var visited : Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_poidetails)
         setSupportActionBar(findViewById(R.id.poi_details_toolbar))
         getPoiData()
+        findVisitedState()
 
         speakDescriptionButton = findViewById(R.id.button_speak_description)
         textToSpeechService = TextToSpeech(this, this)
@@ -133,12 +144,30 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     /**
+     * Query the database to find out if the user has visited this PoI.
+     */
+    private fun findVisitedState() {
+        val currentUserUid = currentUser!!.uid
+        db.collection(USERS_COLLECTION).document(currentUserUid).get()
+            .addOnSuccessListener { result ->
+                val visitedPoisArray = result.get(USER_VISITED_ARRAY)
+                visited = if (visitedPoisArray == null) false else {
+                    val visitedPoiIds = result.get(USER_VISITED_ARRAY) as ArrayList<String>
+                    visitedPoiIds.contains(poi!!.id)
+                }
+            }
+            .addOnFailureListener {
+                displayMessage(getString(R.string.error_visited_state_not_determined))
+            }
+    }
+
+    /**
      * Show menu options for the correct user type.
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.poi_details_menu, menu)
 
-        val markVisitedAction = menu?.findItem(R.id.action_visited)
+        val markVisitedAction = menu?.findItem(R.id.action_mark_visited)
         if (markVisitedAction != null) markVisitedAction.isVisible =
             userType == UserType.STANDARD || userType == UserType.ADMIN
 
@@ -152,6 +181,9 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
      * Handle actions when a menu option is selected.
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_mark_visited -> toggleUserVisitedState()
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -161,6 +193,13 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
     fun onSpeakDescriptionButtonClick(view : View) {
         val text = descriptionTextView.text.toString()
         textToSpeechService.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+    }
+
+    /**
+     *
+     */
+    private fun toggleUserVisitedState() {
+
     }
 
     /**

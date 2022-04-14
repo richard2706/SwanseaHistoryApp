@@ -2,7 +2,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
-        android:id="@+id/action_visited"
+        android:id="@+id/action_mark_visited"
         android:icon="@drawable/ic_baseline_beenhere_24"
         android:title="@string/menu_title_mark_visited"
         app:showAsAction="ifRoom" />
