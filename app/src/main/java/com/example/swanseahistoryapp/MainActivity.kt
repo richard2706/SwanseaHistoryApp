@@ -4,11 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.swanseahistoryapp.databinding.ActivityMapsBinding
@@ -50,8 +49,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private var dbReady = false
     private var mapReady = false
     private var markersLoaded = false
-    private var locationPermissionGranted = false
 
+    // Permissions related variables
+    private var locationPermissionGranted = false
+    private var backgroundLocationPermissionGranted = false
+    private lateinit var locationPermissionRequest : ActivityResultLauncher<Array<String>>
+    private lateinit var backgroundLocationPermissionRequest : ActivityResultLauncher<String>
+
+    // User and database related variables
     private val db = Firebase.firestore
     private var auth = FirebaseAuth.getInstance()
     private var currentUser = auth.currentUser
@@ -71,7 +76,38 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         mapFragment.getMapAsync(this)
 
         loadPois()
-        checkLocationPermissions()
+        registerPermissionRequests()
+        requestLocationPermissions()
+    }
+
+    /**
+     * Sets up actions to complete after permissions are requested
+     */
+    private fun registerPermissionRequests() {
+        locationPermissionRequest = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+                permissions.getOrDefault(
+                    Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                    locationPermissionGranted = true
+                    showMyLocation()
+                }
+                permissions.getOrDefault(
+                    Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    locationPermissionGranted = true
+                    showMyLocation()
+                }
+            }
+        }
+
+        backgroundLocationPermissionRequest = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted : Boolean ->
+            backgroundLocationPermissionGranted = isGranted
+            if (backgroundLocationPermissionGranted) enableNearbyNotifications()
+            else displayMessage(getString(R.string.message_no_background_location))
+        }
     }
 
     /**
@@ -135,30 +171,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     }
 
     /**
-     * Checks and requests location permissions to display the user's location on the map.
+     * Requests location permissions if not already granted. Used to display the user's location
+     * on the map.
      */
-    private fun checkLocationPermissions() {
-        val locationPermissionRequest = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            when {
-                permissions.getOrDefault(
-                    Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                    locationPermissionGranted = true
-                    showMyLocation()
-                }
-                permissions.getOrDefault(
-                    Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                    locationPermissionGranted = true
-                    showMyLocation()
-                }
-            }
-        }
-
-        // Request permission if not already granted
+    private fun requestLocationPermissions() {
         locationPermissionRequest.launch(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION))
+    }
+
+    /**
+     * Requests the background location permission if not already granted. Needed for the background
+     * service to detect when user is near a POI.
+     */
+    private fun checkBackgroundLocationPermission() {
+        backgroundLocationPermissionRequest.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
 
     /**
@@ -230,8 +257,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         when (item.itemId) {
             R.id.action_login -> startActivity(Intent(this, LoginActivity::class.java))
             R.id.action_logout -> logoutUser()
-            R.id.action_enable_notifications -> enableNotifications()
-            R.id.action_disable_notifications -> disableNotifications()
+            R.id.action_enable_notifications -> enableNotificationsPreference()
+            R.id.action_disable_notifications -> disableNotificationsPreference()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -261,9 +288,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     }
 
     /**
-     * Enable notifications when the user is nearby a point of interest.
+     * Enable notifications preference when the user is nearby a point of interest.
      */
-    private fun enableNotifications() {
+    private fun enableNotificationsPreference() {
         if (notificationsEnabled) {
             displayMessage(getString(R.string.message_notifications_enabled))
             return
@@ -274,21 +301,29 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         val data = hashMapOf(USER_NOTIFICATIONS_FIELD to true)
         db.collection(USERS_COLLECTION).document(currentUserUid).set(data, SetOptions.merge())
             .addOnSuccessListener {
-                // Request background notification permission
-                // Start background service
-                displayMessage(getString(R.string.message_notifications_enabled))
-                notificationsEnabled = true
-                invalidateOptionsMenu()
+                checkBackgroundLocationPermission()
             }
             .addOnFailureListener {
-                displayMessage(getString(R.string.message_update_prefs_failed))
+                displayMessage(getString(R.string.message_update_notification_pref_failed))
             }
     }
 
     /**
-     * Disable notifications when the user is nearby a point of interest.
+     * Enables notifications when the user if nearby a PoI.
      */
-    private fun disableNotifications() {
+    private fun enableNearbyNotifications() {
+        if (!backgroundLocationPermissionGranted) return
+
+        // Start background service
+        displayMessage(getString(R.string.message_notifications_enabled))
+        notificationsEnabled = true
+        invalidateOptionsMenu()
+    }
+
+    /**
+     * Disable notifications preference when the user is nearby a point of interest.
+     */
+    private fun disableNotificationsPreference() {
         if (!notificationsEnabled) {
             displayMessage(getString(R.string.message_notifications_disabled))
             return
@@ -305,7 +340,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                 invalidateOptionsMenu()
             }
             .addOnFailureListener {
-                displayMessage(getString(R.string.message_update_prefs_failed))
+                displayMessage(getString(R.string.message_update_notification_pref_failed))
             }
     }
 

@@ -40,5 +40,6 @@
     <string name="poi_image_error">Image could not be displayed</string>
     <string name="message_notifications_enabled">You will receive notifications when nearby a PoI</string>
     <string name="message_notifications_disabled">You will no longer receive notifications when nearby a PoI</string>
-    <string name="message_update_prefs_failed">Your preferences could not be updated</string>
+    <string name="message_no_background_location">You must enable the background location permission to receive notifications when nearby a PoI</string>
+    <string name="message_update_notification_pref_failed">Your notification preference could not be updated</string>
 </resources>
