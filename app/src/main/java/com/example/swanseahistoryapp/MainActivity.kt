@@ -134,11 +134,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         ) { permissions ->
             when {
                 permissions.getOrDefault(
-                    Manifest.permission.ACCESS_FINE_LOCATION, false) ->
+                    Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                     locationPermissionGranted = true
+                    showMyLocation()
+                }
                 permissions.getOrDefault(
-                    Manifest.permission.ACCESS_COARSE_LOCATION, false) ->
+                    Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     locationPermissionGranted = true
+                    showMyLocation()
+                }
             }
         }
 
@@ -146,6 +150,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         locationPermissionRequest.launch(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION))
+    }
+
+    /**
+     * Shows the user's current location on the map, if location permissions have been granted.
+     */
+    @SuppressLint("MissingPermission")
+    private fun showMyLocation() {
+        if (!locationPermissionGranted || !mapReady) return
+        map.isMyLocationEnabled = true
     }
 
     /**
@@ -174,6 +187,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(SWANSEA_LOCATION, DEFAULT_ZOOM))
         mapReady = true
         displayPoiMarkers()
+        showMyLocation()
+
         map.setInfoWindowAdapter(PoiMarkerInfoWindowAdapter(this))
         map.setOnInfoWindowClickListener(this)
     }
