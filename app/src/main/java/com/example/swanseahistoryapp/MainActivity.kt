@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         if (userType == null) return super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.home_menu, menu)
+        menuInflater.inflate(R.menu.menu_home, menu)
         val isLoggedIn = userType != UserType.GUEST
 
         menu?.findItem(R.id.action_login)?.isVisible = !isLoggedIn

@@ -50,7 +50,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_poidetails)
+        setContentView(R.layout.activity_poi_details)
         setSupportActionBar(findViewById(R.id.poi_details_toolbar))
         getPoiData()
         updateUserType()
@@ -204,7 +204,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
      * Show menu options for the correct user type.
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.poi_details_menu, menu)
+        menuInflater.inflate(R.menu.menu_poi_details, menu)
 
         menu?.findItem(R.id.action_mark_visited)?.isVisible =
             (userType == UserType.STANDARD || userType == UserType.ADMIN) && visited != null

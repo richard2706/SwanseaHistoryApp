@@ -7,7 +7,6 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -22,17 +21,10 @@ import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import java.io.File
-import java.io.FileInputStream
 
 class EditPoiActivity : AppCompatActivity() {
     companion object {
         private const val POI_COLLECTION = "points_of_interest"
-        private const val POI_NAME_FIELD = "name"
-        private const val POI_ADDRESS_FIELD = "address"
-        private const val POI_DESCRIPTION_FIELD = "description"
-        private const val POI_LOCATION_FIELD = "location"
-        private const val POI_IMAGE_URL_FIELD = "image_url"
     }
 
     private val db = Firebase.firestore

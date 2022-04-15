@@ -2,7 +2,6 @@ package com.example.swanseahistoryapp
 
 import android.os.Bundle
 import com.google.firebase.firestore.GeoPoint
-import java.io.Serializable
 
 data class PointOfInterest(val id : String, val name : String?, val address : String?,
                       val description : String?, val location : GeoPoint?, val imageURL : String?) {
