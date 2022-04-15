@@ -2,6 +2,8 @@ package com.example.swanseahistoryapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
 import androidx.appcompat.widget.Toolbar
 
 class EditPoiActivity : AppCompatActivity() {
@@ -16,7 +18,19 @@ class EditPoiActivity : AppCompatActivity() {
             newPoi = extraData!!.getBoolean("newPoi", true)
         }
 
-        findViewById<Toolbar>(R.id.toolbar_edit_poi).title =
+        val toolbar = findViewById<Toolbar>(R.id.toolbar_edit_poi)
+        setSupportActionBar(toolbar)
+        toolbar.title =
             if (newPoi) getString(R.string.title_add_poi) else getString(R.string.title_edit_poi)
+    }
+
+    /**
+     * Populates the options menu with the appropriate options dependent on if the user is adding or
+     * editing a PoI.
+     */
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_poi_edit, menu)
+        menu?.findItem(R.id.action_delete)?.isVisible = !newPoi
+        return super.onCreateOptionsMenu(menu)
     }
 }
