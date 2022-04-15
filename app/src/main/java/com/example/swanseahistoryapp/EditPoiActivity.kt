@@ -21,6 +21,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import java.io.File
+import java.io.FileInputStream
 
 class EditPoiActivity : AppCompatActivity() {
     companion object {
@@ -82,7 +85,7 @@ class EditPoiActivity : AppCompatActivity() {
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_add -> if (newPoi) saveNewPoi() else updatePoi()
+            R.id.action_save -> if (newPoi) saveNewPoi() else updatePoi()
             R.id.action_cancel -> finish()
         }
         return super.onOptionsItemSelected(item)
@@ -130,20 +133,38 @@ class EditPoiActivity : AppCompatActivity() {
      * Save the new PoI to the database.
      */
     private fun saveNewPoi() {
-        // upload image to firebase storage
+        if (pickedImageUri == null) uploadPoiData(null)
 
-        // get the url of the image
+        val storage = Firebase.storage.reference
+        val imageReference = storage.child("poi_images/$pickedImageUri?.lastPathSegment")
 
+        var uploadImageTask = imageReference.putFile(pickedImageUri!!)
+        Log.i("add-poi-debug", "uploading")
+        uploadImageTask.addOnSuccessListener {
+            val imageURL = imageReference.downloadUrl.toString()
+            uploadPoiData(imageURL)
+            Log.i("add-poi-debug", imageURL)
+        }
+    }
+
+    /**
+     * Upload the PoI data to the database.
+     */
+    private fun uploadPoiData(imageURL : String?) {
         val location = if (pickedLocation != null)
             GeoPoint(pickedLocation!!.latitude, pickedLocation!!.longitude) else null
-//        val data = hashMapOf(
-//            "name" to findViewById<EditText>(R.id.field_poi_name).text.toString(),
-//            "address" to findViewById<EditText>(R.id.field_poi_address).text.toString(),
-//            "location" to location,
-//            "image_url" to ,
-//            "description" to findViewById<EditText>(R.id.field_poi_description).text.toString()
-//        )
-//        db.collection(POI_COLLECTION).document().set
+        val data = hashMapOf(
+            "name" to findViewById<EditText>(R.id.field_poi_name).text.toString(),
+            "address" to findViewById<EditText>(R.id.field_poi_address).text.toString(),
+            "location" to location,
+            "image_url" to imageURL,
+            "description" to findViewById<EditText>(R.id.field_poi_description).text.toString()
+        )
+
+        db.collection(POI_COLLECTION).document().set(data)
+            .addOnSuccessListener {
+                finish()
+            }
     }
 
     /**
