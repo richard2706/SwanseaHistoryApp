@@ -51,11 +51,12 @@
     <string name="email_body_line_1">You have visited the following points of interest:</string>
     <string name="email_body_list_item">- %s</string>
 
-    <!-- PoI details default text -->
+    <!-- PoI details text -->
     <string name="default_poi_description">No description.</string>
     <string name="default_poi_image_description">An image of the point of interest.</string>
     <string name="default_poi_address">Address not available</string>
     <string name="default_rating_text">No ratings</string>
+    <string name="message_overall_rating">%.1f stars</string>
 
     <!-- Miscellaneous messages -->
     <string name="error_map_pois_not_loaded">Map failed to load</string>

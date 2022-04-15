@@ -43,6 +43,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
     private lateinit var speakDescriptionButton : Button
     private lateinit var visitedTextView : TextView
     private lateinit var descriptionTextView : TextView
+    private lateinit var ratingTextView : TextView
 
     private var poi : PointOfInterest? = null
     private var visited : Boolean? = null
@@ -59,6 +60,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
         textToSpeechService = TextToSpeech(this, this)
         visitedTextView = findViewById(R.id.visited_text)
         descriptionTextView = findViewById(R.id.description_text)
+        ratingTextView = findViewById(R.id.overall_rating_text)
         displayPoiInfo()
     }
 
@@ -143,8 +145,6 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
         if (poi?.name != null) findViewById<Toolbar>(R.id.poi_details_toolbar).title = poi!!.name
         if (poi?.imageURL != null) displayPoiImage(poi!!.imageURL!!)
 
-//        if (visited == true) findViewById<TextView>(R.id.visited_text).visibility = View.VISIBLE
-
         if (poi?.address != null) {
             val addressText = findViewById<TextView>(R.id.address_text)
             addressText.text = poi!!.address
@@ -155,6 +155,8 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
             speakDescriptionButton.visibility = View.VISIBLE
             descriptionTextView.text = poi?.description
         }
+
+        updateOverallRating()
     }
 
     /**
@@ -202,7 +204,6 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
      * Show menu options for the correct user type.
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        Log.i("ratings-debug", "createOptionsMenu ${visited.toString()}")
         menuInflater.inflate(R.menu.poi_details_menu, menu)
 
         menu?.findItem(R.id.action_mark_visited)?.isVisible =
@@ -254,7 +255,17 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
      * Recalculates and displays the overall rating.
      */
     private fun updateOverallRating() {
-        // query for all ratings
+        db.collection(POI_COLLECTION).document(poi!!.id).collection(POI_RATINGS_COLLECTION).get()
+            .addOnSuccessListener { result ->
+                val numRatings = result.size()
+                if (numRatings > 0) {
+                    var totalRating = 0.0
+                    for (entry in result.documents)
+                        totalRating += entry.getDouble(POI_USER_RATING) ?: 0.0
+                    val overallRating = totalRating / numRatings
+                    ratingTextView.text = getString(R.string.message_overall_rating, overallRating)
+                }
+            }
     }
 
     /**
