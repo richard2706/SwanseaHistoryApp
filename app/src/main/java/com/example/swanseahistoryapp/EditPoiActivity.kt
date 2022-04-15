@@ -37,6 +37,7 @@ class EditPoiActivity : AppCompatActivity() {
 
     private val db = Firebase.firestore
     private var newPoi = true
+    private var existingPoi : PointOfInterest? = null
 
     private var pickedLocation : LatLng? = null
     private var pickedImageUri : Uri? = null
@@ -68,6 +69,8 @@ class EditPoiActivity : AppCompatActivity() {
 
         previewImageView = findViewById(R.id.image_view_selected)
         removeImageButton = findViewById(R.id.button_remove_image)
+
+        if (!newPoi) populateExistingData()
     }
 
     /**
@@ -130,6 +133,28 @@ class EditPoiActivity : AppCompatActivity() {
     }
 
     /**
+     * Populate the page with existing data about the selected PoI.
+     */
+    private fun populateExistingData() {
+        val intentData = intent.extras ?: return
+        val id = intentData.getString("id") ?: return
+        val name = intentData.getString("name")
+        val address = intentData.getString("address")
+        val description = intentData.getString("description")
+        val imageURL = intentData.getString("imageURL")
+        val hasLocation = intentData.getBoolean("hasLocation")
+        val latitude = intentData.getDouble("latitude")
+        val longitude = intentData.getDouble("longitude")
+        val location = if (hasLocation) GeoPoint(latitude, longitude) else null
+        existingPoi = PointOfInterest(id, name, address, description, location, imageURL)
+
+        findViewById<EditText>(R.id.field_poi_name).setText(name)
+        findViewById<EditText>(R.id.field_poi_address).setText(address)
+        findViewById<EditText>(R.id.field_poi_description).setText(description)
+        pickedLocation = LatLng(latitude, longitude)
+    }
+
+    /**
      * Save the new PoI to the database.
      */
     private fun saveNewPoi() {
@@ -139,11 +164,9 @@ class EditPoiActivity : AppCompatActivity() {
         val imageReference = storage.child("poi_images/$pickedImageUri?.lastPathSegment")
 
         var uploadImageTask = imageReference.putFile(pickedImageUri!!)
-        Log.i("add-poi-debug", "uploading")
         uploadImageTask.addOnSuccessListener {
             val imageURL = imageReference.downloadUrl.toString()
             uploadPoiData(imageURL)
-            Log.i("add-poi-debug", imageURL)
         }
     }
 
@@ -163,7 +186,7 @@ class EditPoiActivity : AppCompatActivity() {
 
         db.collection(POI_COLLECTION).document().set(data)
             .addOnSuccessListener {
-                finish()
+                navigateHomeWithUpdate()
             }
     }
 
@@ -171,6 +194,29 @@ class EditPoiActivity : AppCompatActivity() {
      * Update the PoI in the database.
      */
     private fun updatePoi() {
+        if (existingPoi == null) return
 
+        val location = if (pickedLocation != null)
+            GeoPoint(pickedLocation!!.latitude, pickedLocation!!.longitude) else null
+        val data = hashMapOf(
+            "name" to findViewById<EditText>(R.id.field_poi_name).text.toString(),
+            "address" to findViewById<EditText>(R.id.field_poi_address).text.toString(),
+            "location" to location,
+            "description" to findViewById<EditText>(R.id.field_poi_description).text.toString()
+        )
+
+        db.collection(POI_COLLECTION).document(existingPoi!!.id).update(data as Map<String, Any>)
+            .addOnSuccessListener {
+                navigateHomeWithUpdate()
+            }
+    }
+
+    /**
+     * Navigate back to the home screen with updated PoIs.
+     */
+    private fun navigateHomeWithUpdate() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("update", true)
+        startActivity(intent)
     }
 }

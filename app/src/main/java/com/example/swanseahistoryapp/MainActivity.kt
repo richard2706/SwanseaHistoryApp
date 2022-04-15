@@ -79,6 +79,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         currentUser = auth.currentUser // Update logged in user
         val extraData = intent.extras
 
+        val updateRequested = extraData?.getBoolean("update", false)
+        if (updateRequested == true) loadPois()
+        intent.removeExtra("update")
+
         val message = extraData?.getString("message")
         if (message != null) displayMessage(message)
         intent.removeExtra("message")

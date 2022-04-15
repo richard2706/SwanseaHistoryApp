@@ -1,5 +1,6 @@
 package com.example.swanseahistoryapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -192,6 +193,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_mark_visited -> toggleUserVisitedState()
+            R.id.action_edit -> navigateToEditPoi()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -232,6 +234,16 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
             .addOnFailureListener {
                 displayMessage(getString(R.string.error_visited_state_not_updated))
             }
+    }
+
+    /**
+     * Navigate to the edit PoI screen.
+     */
+    private fun navigateToEditPoi() {
+        val intent  = Intent(this, EditPoiActivity::class.java)
+        intent.putExtras(poi!!.toBundle())
+        intent.putExtra("newPoi", false)
+        startActivity(intent)
     }
 
     /**
