@@ -229,6 +229,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
             R.id.action_login -> startActivity(Intent(this, LoginActivity::class.java))
             R.id.action_logout -> logoutUser()
             R.id.action_email_visited -> emailVisitedPois()
+            R.id.action_add -> navigateToAddPoi()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -314,6 +315,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
             body.appendLine(getString(R.string.email_body_list_item, visitedPoi.name))
         }
         return body.toString()
+    }
+
+    /**
+     * Navigate to the add PoI screen.
+     */
+    private fun navigateToAddPoi() {
+        val intent  = Intent(this, EditPoiActivity::class.java)
+        intent.putExtra("newPoi", true)
+        startActivity(intent)
     }
 
     /**

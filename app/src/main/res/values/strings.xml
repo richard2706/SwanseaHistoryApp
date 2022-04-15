@@ -4,6 +4,8 @@
     <string name="title_home_activity">Home</string>
     <string name="default_title_poi_details">Unknown Location</string>
     <string name="title_login_activity">Log In</string>
+    <string name="title_add_poi">New PoI</string>
+    <string name="title_edit_poi">Edit PoI</string>
 
     <!-- Button labels -->
     <string name="menu_title_log_in">Log in</string>
@@ -12,11 +14,22 @@
     <string name="menu_title_add_poi">Add PoI</string>
     <string name="menu_title_mark_visited">Mark as Visited</string>
     <string name="menu_title_edit_poi">Edit</string>
+    <string name="menu_title_save_poi">Save</string>
+    <string name="menu_title_discard_poi">Cancel</string>
+    <string name="menu_title_delete_poi">Delete</string>
     <string name="button_text_speak_description">Speak description</string>
+    <string name="button_add_poi_map">Choose location on map</string>
+    <string name="button_change_image">Change image</string>
+    <string name="button_remove_image">Remove image</string>
 
     <!-- Text field labels and placeholder text -->
     <string name="label_text_email">Email</string>
     <string name="label_text_password">Password</string>
+    <string name="label_poi_title">PoI Name</string>
+    <string name="label_poi_address">Address</string>
+    <string name="label_poi_location">Location</string>
+    <string name="label_poi_description">Description</string>
+    <string name="label_poi_image">Image</string>
 
     <!-- Authentication messages -->
     <string name="button_text_login">Log In</string>
