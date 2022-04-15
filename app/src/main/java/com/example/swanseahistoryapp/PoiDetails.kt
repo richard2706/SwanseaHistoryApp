@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
@@ -24,11 +25,15 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Callback
 import java.lang.Exception
 
-class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
+class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
+    RatingBar.OnRatingBarChangeListener {
 
     companion object {
         private const val USERS_COLLECTION = "users"
         private const val USER_VISITED_ARRAY = "visited_pois"
+
+        private const val POI_COLLECTION = "points_of_interest"
+        private const val POI_RATINGS_COLLECTION = "ratings"
     }
 
     private var auth = FirebaseAuth.getInstance()
@@ -57,6 +62,8 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
         visitedTextView = findViewById(R.id.visited_text)
         descriptionTextView = findViewById(R.id.description_text)
         displayPoiInfo()
+
+        findViewById<RatingBar>(R.id.poi_rating_bar).onRatingBarChangeListener = this
     }
 
     /**
@@ -204,6 +211,30 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener {
     fun onSpeakDescriptionButtonClick(view : View) {
         val text = descriptionTextView.text.toString()
         textToSpeechService.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+    }
+
+
+    /**
+     * Updates the users rating of the PoI when the ratings bar rating changes.
+     */
+    override fun onRatingChanged(ratingBar : RatingBar?, rating : Float, fromUser : Boolean) {
+        val data = hashMapOf("rating" to rating)
+        db.collection(POI_COLLECTION).document(poi!!.id).collection(POI_RATINGS_COLLECTION)
+            .document(currentUser!!.uid).set(data)
+            .addOnSuccessListener {
+                displayMessage(getString(R.string.message_rating_updated))
+                updateOverallRating()
+            }
+            .addOnFailureListener {
+                displayMessage(getString(R.string.error_rating_not_updated))
+            }
+    }
+
+    /**
+     * Recalculates and displays the overall rating.
+     */
+    private fun updateOverallRating() {
+        // query for all ratings
     }
 
     /**
