@@ -90,6 +90,7 @@ class EditPoiActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_save -> if (newPoi) saveNewPoi() else updatePoi()
             R.id.action_cancel -> finish()
+            R.id.action_delete -> deletePoi()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -206,6 +207,17 @@ class EditPoiActivity : AppCompatActivity() {
         )
 
         db.collection(POI_COLLECTION).document(existingPoi!!.id).update(data as Map<String, Any>)
+            .addOnSuccessListener {
+                navigateHomeWithUpdate()
+            }
+    }
+
+    /**
+     * Deletes the current PoI
+     */
+    private fun deletePoi() {
+        if (existingPoi == null) return
+        db.collection(POI_COLLECTION).document(existingPoi!!.id).delete()
             .addOnSuccessListener {
                 navigateHomeWithUpdate()
             }
