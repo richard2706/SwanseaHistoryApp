@@ -52,6 +52,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
         setContentView(R.layout.activity_poidetails)
         setSupportActionBar(findViewById(R.id.poi_details_toolbar))
         getPoiData()
+        updateUserType()
         findVisitedState()
 
         speakDescriptionButton = findViewById(R.id.button_speak_description)
@@ -62,9 +63,9 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
     }
 
     /**
-     * Force options menu to update and ratings bar depending on user account level.
+     * Check the type of the user and update the options menu accordingly
      */
-    override fun onResume() {
+    private fun updateUserType() {
         currentUser = auth.currentUser
 
         val extraData = intent.extras
@@ -73,7 +74,15 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
             userType = prevUserType as UserType
         }
         invalidateOptionsMenu()
+    }
 
+    /**
+     * Force options menu to update and ratings bar depending on user account level.
+     */
+    override fun onResume() {
+        updateUserType()
+
+        // Display user's individual rating
         if (userType != UserType.GUEST) { // If user is logged in
             findViewById<LinearLayout>(R.id.user_rating_layout).visibility = View.VISIBLE
             val ratingBar = findViewById<RatingBar>(R.id.poi_rating_bar)
@@ -134,7 +143,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
         if (poi?.name != null) findViewById<Toolbar>(R.id.poi_details_toolbar).title = poi!!.name
         if (poi?.imageURL != null) displayPoiImage(poi!!.imageURL!!)
 
-        // display visited message if visited
+//        if (visited == true) findViewById<TextView>(R.id.visited_text).visibility = View.VISIBLE
 
         if (poi?.address != null) {
             val addressText = findViewById<TextView>(R.id.address_text)
@@ -167,14 +176,16 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
      */
     private fun findVisitedState() {
         if (userType == UserType.GUEST) return
+        Log.i("ratings-debug", "findVisitedState")
 
+        visited = false
         val currentUserUid = currentUser!!.uid
         db.collection(USERS_COLLECTION).document(currentUserUid).get()
             .addOnSuccessListener { result ->
                 val visitedPoisArray = result.get(USER_VISITED_ARRAY)
-                visited = if (visitedPoisArray == null) false else {
+                if (visitedPoisArray != null) {
                     val visitedPoiIds = result.get(USER_VISITED_ARRAY) as ArrayList<String>
-                    visitedPoiIds.contains(poi!!.id)
+                    visited = visitedPoiIds.contains(poi!!.id)
                 }
 
                 if (visited == true) {
@@ -191,14 +202,12 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
      * Show menu options for the correct user type.
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        Log.i("ratings-debug", "createOptionsMenu ${visited.toString()}")
         menuInflater.inflate(R.menu.poi_details_menu, menu)
 
-        val markVisitedAction = menu?.findItem(R.id.action_mark_visited)
-        if (markVisitedAction != null) markVisitedAction.isVisible =
-            userType == UserType.STANDARD || userType == UserType.ADMIN && visited != null
-
-        val editAction = menu?.findItem(R.id.action_edit)
-        if (editAction != null) editAction.isVisible = userType == UserType.ADMIN
+        menu?.findItem(R.id.action_mark_visited)?.isVisible =
+            (userType == UserType.STANDARD || userType == UserType.ADMIN) && visited != null
+        menu?.findItem(R.id.action_edit)?.isVisible = userType == UserType.ADMIN
 
         return super.onCreateOptionsMenu(menu)
     }
