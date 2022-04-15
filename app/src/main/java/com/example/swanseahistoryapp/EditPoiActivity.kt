@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 
 class EditPoiActivity : AppCompatActivity() {
@@ -32,5 +33,30 @@ class EditPoiActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_poi_edit, menu)
         menu?.findItem(R.id.action_delete)?.isVisible = !newPoi
         return super.onCreateOptionsMenu(menu)
+    }
+
+    /**
+     * Handle actions when each menu option is selected.
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_add -> if (newPoi) saveNewPoi() else updatePoi()
+            R.id.action_cancel -> finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * Save the new PoI to the database.
+     */
+    private fun saveNewPoi() {
+
+    }
+
+    /**
+     * Update the PoI in the database.
+     */
+    private fun updatePoi() {
+
     }
 }
