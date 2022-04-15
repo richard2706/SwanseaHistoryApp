@@ -8,12 +8,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -34,6 +30,7 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
 
         private const val POI_COLLECTION = "points_of_interest"
         private const val POI_RATINGS_COLLECTION = "ratings"
+        private const val POI_USER_RATING = "rating"
     }
 
     private var auth = FirebaseAuth.getInstance()
@@ -62,12 +59,10 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
         visitedTextView = findViewById(R.id.visited_text)
         descriptionTextView = findViewById(R.id.description_text)
         displayPoiInfo()
-
-        findViewById<RatingBar>(R.id.poi_rating_bar).onRatingBarChangeListener = this
     }
 
     /**
-     * Force options menu to update, if
+     * Force options menu to update and ratings bar depending on user account level.
      */
     override fun onResume() {
         currentUser = auth.currentUser
@@ -78,6 +73,18 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
             userType = prevUserType as UserType
         }
         invalidateOptionsMenu()
+
+        if (userType != UserType.GUEST) { // If user is logged in
+            findViewById<LinearLayout>(R.id.user_rating_layout).visibility = View.VISIBLE
+            val ratingBar = findViewById<RatingBar>(R.id.poi_rating_bar)
+            ratingBar.onRatingBarChangeListener = this
+
+            db.collection(POI_COLLECTION).document(poi!!.id).collection(POI_RATINGS_COLLECTION)
+                .document(currentUser!!.uid).get()
+                .addOnSuccessListener { result ->
+                    ratingBar.rating = result.getDouble(POI_USER_RATING)?.toFloat() ?: 0F
+                }
+        }
 
         super.onResume()
     }
@@ -159,6 +166,8 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
      * Query the database to find out if the user has visited this PoI.
      */
     private fun findVisitedState() {
+        if (userType == UserType.GUEST) return
+
         val currentUserUid = currentUser!!.uid
         db.collection(USERS_COLLECTION).document(currentUserUid).get()
             .addOnSuccessListener { result ->
@@ -218,6 +227,8 @@ class PoiDetails : AppCompatActivity(), TextToSpeech.OnInitListener,
      * Updates the users rating of the PoI when the ratings bar rating changes.
      */
     override fun onRatingChanged(ratingBar : RatingBar?, rating : Float, fromUser : Boolean) {
+        if (userType == UserType.GUEST) return
+
         val data = hashMapOf("rating" to rating)
         db.collection(POI_COLLECTION).document(poi!!.id).collection(POI_RATINGS_COLLECTION)
             .document(currentUser!!.uid).set(data)
