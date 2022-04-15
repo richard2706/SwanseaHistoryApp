@@ -63,9 +63,9 @@ class EditPoiActivity : AppCompatActivity() {
         }
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar_edit_poi)
-        setSupportActionBar(toolbar)
         toolbar.title =
             if (newPoi) getString(R.string.title_add_poi) else getString(R.string.title_edit_poi)
+        setSupportActionBar(toolbar)
 
         previewImageView = findViewById(R.id.image_view_selected)
         removeImageButton = findViewById(R.id.button_remove_image)
