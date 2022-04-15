@@ -2,13 +2,18 @@ package com.example.swanseahistoryapp
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
@@ -31,6 +36,9 @@ class EditPoiActivity : AppCompatActivity() {
     private var newPoi = true
 
     private var pickedLocation : LatLng? = null
+    private var pickedImageUri : Uri? = null
+    private lateinit var previewImageView : ImageView
+    private lateinit var removeImageButton : Button
 
     // Saves the picked location from the location picker activity
     private val locationPickerForResult =
@@ -54,6 +62,9 @@ class EditPoiActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         toolbar.title =
             if (newPoi) getString(R.string.title_add_poi) else getString(R.string.title_edit_poi)
+
+        previewImageView = findViewById(R.id.image_view_selected)
+        removeImageButton = findViewById(R.id.button_remove_image)
     }
 
     /**
@@ -85,10 +96,43 @@ class EditPoiActivity : AppCompatActivity() {
     }
 
     /**
+     * Allows the user to choose an image for the PoI.
+     */
+    fun onSelectImageButtonClick(view : View) {
+        var intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(intent, 0)
+    }
+
+    /**
+     * Allows the user to deselect the image for the PoI
+     */
+    fun onRemoveImageButtonClick(view : View) {
+        previewImageView.visibility = View.GONE
+        removeImageButton.visibility = View.GONE
+        pickedImageUri = null
+    }
+
+    /**
+     * Handle when a photo has been chosen. Stores the image URI and shows a preview
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            val thumbnail: Bitmap? = data?.getParcelableExtra("data")
+            pickedImageUri = data?.data
+            previewImageView.setImageURI(pickedImageUri);
+            previewImageView.visibility = View.VISIBLE
+            removeImageButton.visibility = View.VISIBLE
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    /**
      * Save the new PoI to the database.
      */
     private fun saveNewPoi() {
-        // upload image to firebase storage, get url
+        // upload image to firebase storage
+
+        // get the url of the image
 
         val location = if (pickedLocation != null)
             GeoPoint(pickedLocation!!.latitude, pickedLocation!!.longitude) else null
@@ -98,8 +142,8 @@ class EditPoiActivity : AppCompatActivity() {
 //            "location" to location,
 //            "image_url" to ,
 //            "description" to findViewById<EditText>(R.id.field_poi_description).text.toString()
-        )
-        db.collection(POI_COLLECTION).document().set
+//        )
+//        db.collection(POI_COLLECTION).document().set
     }
 
     /**

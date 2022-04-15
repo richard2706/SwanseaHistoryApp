@@ -20,7 +20,7 @@
     <string name="menu_title_delete_poi">Delete</string>
     <string name="button_text_speak_description">Speak description</string>
     <string name="button_add_poi_map">Choose location on map</string>
-    <string name="button_change_image">Change image</string>
+    <string name="button_change_image">Select image</string>
     <string name="button_remove_image">Remove image</string>
 
     <!-- Text field labels and placeholder text -->

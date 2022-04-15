@@ -51,7 +51,6 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback,
      * Return the clicked location to the previous activity.
      */
     override fun onMapClick(location: LatLng) {
-        Log.i("add-poi-debug", "onMapClick")
         pickedLocation = location
         finish()
     }
