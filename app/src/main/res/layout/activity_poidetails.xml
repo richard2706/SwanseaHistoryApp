@@ -56,6 +56,41 @@
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@id/poi_details_card">
 
+        <LinearLayout
+            android:id="@+id/user_rating_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:paddingTop="10dp"
+              android:text="@string/message_user_rating"
+              android:textSize="16sp" />
+
+          <RatingBar
+              android:id="@+id/poi_rating_bar"
+              android:layout_width="wrap_content"
+              android:layout_height="45dp"
+              android:numStars="5"
+              android:scaleX="0.75"
+              android:scaleY="0.75"
+              android:stepSize="1"
+              android:translationX="-30dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/overall_rating_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="10dp"
+            android:paddingVertical="10dp"
+            android:text="@string/default_rating_text"
+            android:textSize="16sp"
+            android:visibility="visible"
+            app:drawableLeftCompat="@drawable/ic_baseline_star_24" />
+
         <TextView
             android:id="@+id/visited_text"
             android:layout_width="match_parent"
